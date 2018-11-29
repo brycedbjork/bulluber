@@ -1,7 +1,8 @@
 import firebase from "firebase"
+import {firebaseApiKey} from "../env"
 
 var config = {
-  apiKey: "AIzaSyDTPFvUjlF3csgjz3QZaMoeDA6Xi4FLWak",
+  apiKey: firebaseApiKey,
   authDomain: "bulluber-a9d07.firebaseapp.com",
   databaseURL: "https://bulluber-a9d07.firebaseio.com",
   projectId: "bulluber-a9d07",
