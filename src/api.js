@@ -1,5 +1,5 @@
 import firebase from "firebase"
-import {firebaseApiKey} from "../env"
+import {firebaseApiKey} from "./env"
 
 var config = {
   apiKey: firebaseApiKey,
