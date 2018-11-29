@@ -12,6 +12,10 @@ firebase.initializeApp(config);
 
 let firestore = firebase.firestore()
 
-export const CreatePost = (content) => {
-	return firestore.collection("posts").add({content: content})
+export const CreatePost = (userId, groupId, content) => {
+	return firestore.collection("posts").add({
+		userId,
+		groupId,
+		content
+	})
 }
