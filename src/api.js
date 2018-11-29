@@ -1,6 +1,4 @@
-var firebase = require("firebase/app");
-require("firebase/auth");
-require("firebase/firestore");
+import firebase from "firebase"
 
 var config = {
   apiKey: "AIzaSyDTPFvUjlF3csgjz3QZaMoeDA6Xi4FLWak",
@@ -12,3 +10,8 @@ var config = {
 };
 firebase.initializeApp(config);
 
+let firestore = firebase.firestore()
+
+export const CreatePost = (content) => {
+	return firestore.collection("posts").add({content: content})
+}

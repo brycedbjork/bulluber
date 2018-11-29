@@ -1,8 +1,14 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import {CreatePost} from "./api"
 
 class App extends Component {
+
+  componentDidMount() {
+    CreatePost("test post")
+  }
+
   render() {
     return (
       <div className="App">
