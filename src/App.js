@@ -28,13 +28,27 @@ const Input = styled.input`
   border-radius: 3px;
 `;
 
+const ContentInput = styled.textarea`
+  padding: 0.5em;
+  margin: 0.5em;
+  width:500px;
+  height:300px;
+  color: ${props => props.inputColor || "palevioletred"};
+  background: papayawhip;
+  border: none;
+  border-radius: 3px;
+`;
+
+
 class App extends Component {
 
     constructor(props) {
         super(props);
 
         this.state = {
-            currentUserUID: 0
+            currentUserUID: 0,
+            content:"",
+            group:""
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -71,24 +85,8 @@ class App extends Component {
     render() {
         return (
             <div className="Login">
-                <form onSubmit={this.handleSubmit}>
-                    <Input
-                        id="email"
-                        type="email"
-                        value={this.state.email}
-                        onChange={this.handleChange}
-                        defaultValue="@yale.edu"
-                        inputColor="blue"
-                    />
-                    <Input
-                        id="password"
-                        value={this.state.password}
-                        onChange={this.handleChange}
-                        type="password"
-                        inputColor="blue"
-                    />
-                </form>
                 <Wrapper>
+
                     <CreatePostButton value="Submit" onClick={() => {
                         {
                             this.handleLogin();
@@ -105,8 +103,33 @@ class App extends Component {
                         Logout
                     </CreatePostButton>
 
+
+                    <form onSubmit={this.handleSubmit}>
+                        <label>
+                            Group:
+                        <Input
+                            id="group"
+                            type="text"
+                            value={this.state.group}
+                            onChange={this.handleChange}
+                            defaultValue="Enter group name"
+                            inputColor="blue"
+                        />
+                        </label>
+                        <br></br>
+                        <label>
+                            Message:
+                        <ContentInput
+                            id="content"
+                            type="text"
+                            value={this.state.content}
+                            onChange={this.handleChange}
+                            inputColor="blue"
+                        />
+                        </label>
+                    </form>
                     <CreatePostButton onClick={() => {
-                        CreatePost(this.state.currentUserUID, "test group id", "test content")
+                        CreatePost(this.state.currentUserUID, "test group id", this.state.content)
                     }}>
                         Create Post!
                     </CreatePostButton>
