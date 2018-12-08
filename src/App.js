@@ -141,13 +141,11 @@ class App extends Component {
             uid = result.user.uid;
             name = result.user.displayName;
             console.log(result)
-            that.setState({currentUserUID: uid});
+            that.setState({currentUserUID: uid, isLoggedIn: true});
             // CreateProfile(that.state.currentUserUID, name)
         }).catch(function (error) {
             alert(error.message);
         });
-
-        this.setState({isLoggedIn: true});
 
     };
 
@@ -216,7 +214,7 @@ class App extends Component {
                   </Header>
                   <Body>
                     <Groups/>
-                    <Posts/>
+                    {this.state.isLoggedIn && <Posts/>}
                   </Body>
 
                   <CreatePostButton onClick={() => {

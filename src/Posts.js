@@ -29,6 +29,7 @@ class Posts extends Component {
   } 
 
   render () {
+    console.log(this.state.posts)
      let posts = []
      for (let i = 0; i < this.state.posts.length; i++) {
       const post = this.state.posts[i]
