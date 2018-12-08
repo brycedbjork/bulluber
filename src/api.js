@@ -30,9 +30,13 @@ export const CreatePost = (userId, groupName, content) => {
             {
                 postId:postId,
             },{merge:true}
-        )
+        );
 
+        alert("Message posted to group: " + groupName)
 	});
+
+
+
 };
 
 export const Login = () => {
