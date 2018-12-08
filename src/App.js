@@ -132,7 +132,9 @@ class App extends Component {
             <div className="Login">
                 <Wrapper>
                     {button}
-                    <form>
+                    {this.state.isLoggedIn == true && 
+                      <div>
+                        <form>
                         <label>
                             Group:
                             <Input
@@ -155,12 +157,14 @@ class App extends Component {
                                 inputColor="blue"
                             />
                         </label>
-                    </form>
-                    <CreatePostButton onClick={() => {
-                        CreatePost(this.state.currentUserUID, "test group id", this.state.content)
-                    }}>
-                        Create Post!
-                    </CreatePostButton>
+                      </form>
+                      <CreatePostButton onClick={() => {
+                          CreatePost(this.state.currentUserUID, "test group id", this.state.content)
+                      }}>
+                          Create Post!
+                      </CreatePostButton>
+                      </div>
+                    }
                     <CreatePostButton onClick={() => {
                         this.handleMessagesDisplay(this.state.currentUserUID);
                     }}>
