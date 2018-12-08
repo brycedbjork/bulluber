@@ -3,6 +3,7 @@ import {CreatePost, Login, Logout} from "./api"
 import firebase from "firebase"
 import styled from "styled-components"
 
+
 const Wrapper = styled.div`
   width: 100%;
   min-height: 800px;
@@ -51,6 +52,41 @@ const ContentInput = styled.textarea`
   border: none;
   border-radius: 3px;
 `;
+
+
+class DisplayPosts extends Component {
+  constructor (props){
+    super(props);
+    this.state = {
+      posts: [],
+      index: 0
+    }
+  }
+
+  componentDidMount() {
+    var userId = firebase.auth().currentUser.uid;
+    let firestore = firebase.firestore();
+    let currentPosts = this.state.posts
+    console.log("the state is: ", this.state.posts)
+    firestore.collection('posts/').where("userId", "==",userId).get().then(snap => {
+        snap.forEach(post =>{
+            currentPosts[this.state.index] = post.data();
+            console.log("new post is: ", currentPosts)
+            this.setState({posts: currentPosts, index: this.state.index + 1})
+        })
+    })
+  } 
+
+  render () {
+     let posts = []
+     for (let i = 0; i < this.state.posts.length; i++) {
+      const post = this.state.posts[i]
+      posts.push(<div>{post.content}</div>)
+     }
+
+     return (<div>{posts}</div>)
+  }
+}
 
 class App extends Component {
 
@@ -103,6 +139,9 @@ class App extends Component {
         console.log(firestore.collection('posts/').where("userId", "==",userId).get().then(function(snap){
             snap.forEach(function(post){
                 console.log(post.id,"=>",post.data())
+                return(
+                  <div>I LOVE BUBBLES</div>
+                  )
             })
         }))
     };
@@ -163,6 +202,9 @@ class App extends Component {
                       }}>
                           Create Post!
                       </CreatePostButton>
+                      <div>
+                        <DisplayPosts />
+                      </div>
                       </div>
                     }
                     <CreatePostButton onClick={() => {
@@ -170,10 +212,13 @@ class App extends Component {
                     }}>
                         View posts
                     </CreatePostButton>
+
+
                 </Wrapper>
             </div>
         );
     }
 }
+
 
 export default App;
