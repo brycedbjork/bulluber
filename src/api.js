@@ -12,6 +12,7 @@ var config = {
 firebase.initializeApp(config);
 
 let firestore = firebase.firestore()
+var provider = new firebase.auth.GoogleAuthProvider();
 
 export const CreatePost = (userId, groupId, content) => {
 	return firestore.collection("posts").add({
@@ -19,4 +20,16 @@ export const CreatePost = (userId, groupId, content) => {
 		groupId,
 		content
 	})
+};
+
+export const Login = () => {
+        return firebase.auth().signInWithPopup(provider)
+};
+
+export const Logout = () => {
+    firebase.auth().signOut().then(function () {
+        alert("Signed out successfully!")
+    }).catch(function (error) {
+        alert(error.message);
+    });
 }
