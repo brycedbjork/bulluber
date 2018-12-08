@@ -207,7 +207,7 @@ class App extends Component {
             </Header>
             <Body>
               <Groups updateActiveGroup={this.updateActiveGroup}/>
-              {this.state.isLoggedIn && <Posts/>}
+              <Posts/>
             </Body>
 
           </Wrapper>
