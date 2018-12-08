@@ -118,16 +118,11 @@ const Body = styled.div`
 class App extends Component {
 
     constructor(props) {
-        super(props);
-
+        super(props)
         this.state = {
-            currentUserUID: null,
-            activeGroup: null,
-            isLoggedIn: false
+            uid: null,
+            activeGroup: null
         };
-
-        this.handleLogout = this.handleLogout.bind(this);
-        this.handleLogin = this.handleLogin.bind(this);
         this.updateActiveGroup = this.updateActiveGroup.bind(this);
     }
 
@@ -135,64 +130,13 @@ class App extends Component {
       this.setState({activeGroup: groupId})
     }
 
-    handleLogin = () => {
-        let uid = -1;
-        let name = "";
-        var that = this;
-        Login().then(function (result) {
-            uid = result.user.uid;
-            name = result.user.displayName;
-            console.log(result)
-            that.setState({currentUserUID: uid, isLoggedIn: true});
-            // CreateProfile(that.state.currentUserUID, name)
-        }).catch(function (error) {
-            alert(error.message);
-        });
-
-    };
-
-    handleLogout = () => {
-        Logout()
-        this.setState({isLoggedIn: false})
-        console.log("logout is: ", this.state.isLoggedIn)
-    };
-
-
-    handleGetUsersPosts = () => {
-        GetUsersPosts().then(function(snap){
-                snap.forEach(function(post){
-                    console.log(post.id,"=>",post.data())
-                })
-    })};
-
-
-    handleGetAllPosts = () => {
-        GetAllPosts().then(function(snap){
-            snap.forEach(function(post){
-                console.log(post.id,"=>",post.data())
-                return(
-                  <div>I LOVE BUBBLES</div>
-                  )
-            })
-        })};
-
-    //
-    // handleMessagesDisplay = () => {
-    //     var userId = firebase.auth().currentUser.uid;
-    //     let firestore = firebase.firestore();
-    //     console.log(firestore.collection('posts/').where("userId", "==",userId).get().then(function(snap){
-    //         snap.forEach(function(post){
-    //             console.log(post.id,"=>",post.data())
-    //         })
-    //     }))
-    // };
-
     render() {
+      console.log(this.state)
         return (
           <Wrapper>
             <Body>
-              <Groups updateActiveGroup={this.updateActiveGroup}/>
-              <Posts/>
+              <Groups uid={this.state.uid} updateActiveGroup={this.updateActiveGroup}/>
+              <Posts uid={this.state.uid} activeGroup={this.state.activeGroup}/>
             </Body>
             <Header>
               <LeftHeader>
@@ -202,15 +146,23 @@ class App extends Component {
               <RightHeader>
                 <LoginButton 
                   value="Submit" onClick={() => {
-                    if (this.state.isLoggedIn) {
-                      this.handleLogout()
+                    if (this.state.uid) {
+                      Logout().then(() => {
+                        this.setState({uid: null})
+                      }).catch(error => {
+                        alert("An error occurred while logging out")
+                      })
                     }
                     else {
-                      this.handleLogin()
+                      Login().then(uid => {
+                        this.setState({uid})
+                      }).catch(error => {
+                        alert("An error occurred while logging in")
+                      })
                     }
                   }}>
-                    {this.state.isLoggedIn && "logout"}
-                    {!this.state.isLoggedIn && (
+                    {this.state.uid && "logout"}
+                    {!this.state.uid && (
                       <GoogleImage src={require("./assets/google.png")}/>
                     )}
                 </LoginButton>

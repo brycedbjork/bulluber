@@ -5,21 +5,26 @@ import {colors} from "./lib/styles"
 
 const Wrapper = styled.div`
   flex: 1;
+  padding: 40px;
 `
 
 const Post = styled.div`
-  
+  padding: 40px;
+  border-radius: 10px;
+  border: 1px solid rgba(19, 23, 39, 0.1);
+  box-sizing: border-box;
+  width: 500px;
 `
 
 const CreatePost = styled.div`
-  width: 400px;
+  width: 500px;
   height: 200px;
   position: relative;
 `
 
 const CreatePostInput = styled.textarea`
   resize: none;
-  width: 400px;
+  width: 500px;
   height: 200px;
   outline: none;
   border-radius: 10px;
@@ -102,7 +107,7 @@ class Posts extends Component {
         <CreatePost>
           <CreatePostInput placeholder="what's up? let's talk"/>
           <Footer>
-            <FooterText>in Group Name</FooterText>
+            <FooterText>in {this.props.activeGroup || "General"}</FooterText>
             <PostButton>
               Post
               <PostArrow src={require("./assets/arrow.png")}/>
