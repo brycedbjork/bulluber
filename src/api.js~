@@ -121,6 +121,7 @@ export const CreateProfile = (userId, name_in) => {
 
 
 export const Logout = () => {
+<<<<<<< HEAD
     firebase.auth().signOut().then(function () {
         alert("Signed out successfully!")
     }).catch(function (error) {
@@ -149,8 +150,7 @@ export const LikePost = (userId, postId) => {
 };
 
 
-
-export const Logout = () => {
+=======
     return new Promise((resolve, reject) => {
         firebase.auth().signOut().then(res => {
             resolve();
@@ -158,3 +158,4 @@ export const Logout = () => {
 
     })
 };
+>>>>>>> 4df5d31ac9adb97b5568c7c6d77c222eb8729c17
