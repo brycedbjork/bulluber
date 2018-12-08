@@ -92,7 +92,7 @@ class App extends Component {
 
 
         this.setState({currentUserUID: firebase.auth().currentUser.uid})
-        alert(this.state.currentUserUID);
+
 
         this.setState({isLoggedIn: true}); 
 
