@@ -16,7 +16,7 @@ var provider = new firebase.auth.GoogleAuthProvider();
 
 export const CreatePost = (userId, groupName, content) => {
     let postId = -1;
-    if(groupName== ""){ groupName = "General"};
+    if(groupName === ""){ groupName = "General"}
     firestore.collection("posts").add({
 		userId,
 		groupName,
