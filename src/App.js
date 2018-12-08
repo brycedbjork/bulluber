@@ -94,13 +94,12 @@ class App extends Component {
 
     handleMessagesDisplay = (uid) => {
         var userId = firebase.auth().currentUser.uid;
-        var database = firebase.database();
-        database.ref('posts/').orderByChild('userId').once('value')
-            .then((snap)=> {
-                snap.forEach((snapshot)=> {
-                    console.log(snapshot.val().content)
-                })
-            });
+        let firestore = firebase.firestore();
+        console.log(firestore.collection('posts/').where("userId", "==",userId).get().then(function(snap){
+            snap.forEach(function(post){
+                console.log(post.id,"=>",post.data())
+            })
+        }))
     };
 
     render() {
