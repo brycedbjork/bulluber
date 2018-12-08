@@ -29,14 +29,21 @@ export const CreatePost = (userId, groupName, content) => {
     })
 };
 
-
-export const CreateGroup = (GroupName) => {
+export const CreateGroup = (groupName) => {
+    // firestore.collection()
     return new Promise((resolve, reject) => {
-        firestore.collection("groups").add({
-            groupName: GroupName,
-            timestamp: firebase.firestore.Timestamp.now().toMillis()
-        }).then(doc => {
-            resolve(doc.id)
+        firestore.collection("groups").where("groupName", "=", groupName).get().then(results => {
+            if (!results.empty) {
+                reject("Group with name already exists")
+            }
+            else {
+                firestore.collection("groups").add({
+                    groupName: groupName,
+                    timestamp: firebase.firestore.Timestamp.now().toMillis()
+                }).then(doc => {
+                    resolve(doc.id)
+                }).catch(error => reject(error))
+            }
         }).catch(error => reject(error))
     })
 };
