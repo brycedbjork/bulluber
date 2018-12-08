@@ -65,11 +65,18 @@ export const createGroup = (groupName) => {
     export const Login = () => {
         return firebase.auth().signInWithPopup(provider)
     };
+export const CreateProfile = (userId, name) => {
+  return firestore.collection("users").add({
+  	userId,
+  	name
+  })
+};
 
-    export const Logout = () => {
-        firebase.auth().signOut().then(function () {
-            alert("Signed out successfully!")
-        }).catch(function (error) {
-            alert(error.message);
-        });
-    };
+
+export const Logout = () => {
+    firebase.auth().signOut().then(function () {
+        alert("Signed out successfully!")
+    }).catch(function (error) {
+        alert(error.message);
+    });
+}

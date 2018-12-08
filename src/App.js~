@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {createGroup, CreatePost, GetAllPosts, GetUsersPosts, Login, Logout} from "./api"
+import {CreatePost, Login, Logout, CreateProfile} from "./api"
 import firebase from "firebase"
 import styled from "styled-components"
 
@@ -61,8 +61,9 @@ class App extends Component {
             currentUserUID: 0,
             content: "",
 
-            group: "General",
+            group: "general"
 
+            group: "",
             isLoggedIn: false
 
         };
@@ -92,10 +93,16 @@ class App extends Component {
         }).catch(function (error) {
             alert(error.message);
         });
+<<<<<<< HEAD
+=======
 
-        this.setState({currentUserUID: firebase.auth().currentUser.uid});
-        this.setState({isLoggedIn: true});
 
+        this.setState({currentUserUID: firebase.auth().currentUser.uid})
+
+
+        this.setState({isLoggedIn: true}); 
+
+>>>>>>> master
     };
 
     handleLogout = () => {
@@ -105,36 +112,19 @@ class App extends Component {
         console.log("logout is: ", this.state.isLoggedIn);
     };
 
-
-    handleGetUsersPosts = () => {
-        GetUsersPosts().then(function(snap){
-                snap.forEach(function(post){
-                    console.log(post.id,"=>",post.data())
-                })
-    })};
-
-
-    handleGetAllPosts = () => {
-        GetAllPosts().then(function(snap){
+    handleMessagesDisplay = () => {
+        var userId = firebase.auth().currentUser.uid;
+        let firestore = firebase.firestore();
+        console.log(firestore.collection('posts/').where("userId", "==",userId).get().then(function(snap){
             snap.forEach(function(post){
                 console.log(post.id,"=>",post.data())
             })
-        })};
-
-    //
-    // handleMessagesDisplay = () => {
-    //     var userId = firebase.auth().currentUser.uid;
-    //     let firestore = firebase.firestore();
-    //     console.log(firestore.collection('posts/').where("userId", "==",userId).get().then(function(snap){
-    //         snap.forEach(function(post){
-    //             console.log(post.id,"=>",post.data())
-    //         })
-    //     }))
-    // };
+        }))
+    };
 
     render() {
       let button; 
-      if (this.state.isLoggedIn === false) {
+      if (this.state.isLoggedIn == false) {
         button = <LoginButton 
                   value="Submit" onClick={() => {
                     {
@@ -187,19 +177,9 @@ class App extends Component {
                         Create Post!
                     </CreatePostButton>
                     <CreatePostButton onClick={() => {
-                        this.handleGetAllPosts(this.state.currentUserUID);
+                        this.handleMessagesDisplay(this.state.currentUserUID);
                     }}>
-                        View all posts
-                    </CreatePostButton>
-                    <CreatePostButton onClick={() => {
-                        this.handleGetUsersPosts(this.state.currentUserUID);
-                    }}>
-                        View my posts
-                    </CreatePostButton>
-                    <CreatePostButton onClick={() => {
-                        createGroup(this.state.group);
-                    }}>
-                        Make group
+                        View posts
                     </CreatePostButton>
                 </Wrapper>
             </div>
