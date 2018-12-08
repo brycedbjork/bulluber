@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {CreatePost, Login, Logout} from "./api"
+import {CreatePost, Login, Logout, CreateProfile} from "./api"
 import firebase from "firebase"
 import styled from "styled-components"
 
@@ -77,14 +77,17 @@ class App extends Component {
 
     handleLogin = () => {
         let uid = -1;
+        let name = "";
         var that = this;
         Login().then(function (result) {
             uid = result.user.uid;
+            name = result.user.displayName;
+            console.log(result)
             that.setState({currentUserUID: uid});
+            CreateProfile(that.state.currentUserUID, name)
         }).catch(function (error) {
             alert(error.message);
         });
-
     };
 
     handleLogout = () => {
