@@ -107,28 +107,7 @@ export const CreateProfile = (userId, name_in) => {
             }
         }).catch(error => reject(error))
     })
-
-    return firestore.collection("users").doc(userId).set({
-        name: name_in
-    })
-        .then(function () {
-            console.log("Document successfully written!");
-        })
-        .catch(function (error) {
-            console.error("Error writing document: ", error);
-        });
 };
-
-
-export const Logout = () => {
-    firebase.auth().signOut().then(function () {
-        alert("Signed out successfully!")
-    }).catch(function (error) {
-        alert(error.message);
-    });
-}
-
-
 
 export const LikePost = (userId, postId) => {
     return new Promise ((resolve, reject) => {
@@ -147,7 +126,6 @@ export const LikePost = (userId, postId) => {
         }).catch(error => reject(error))
     })
 };
-
 
 
 export const Logout = () => {
