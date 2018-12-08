@@ -1,5 +1,14 @@
 import React, {Component} from "react"
 import firebase from "firebase"
+import styled from "styled-components"
+
+const Wrapper = styled.div`
+   
+`
+
+const Post = styled.div`
+  
+`
 
 class Posts extends Component {
   constructor (props){
@@ -29,14 +38,21 @@ class Posts extends Component {
   } 
 
   render () {
-    console.log(this.state.posts)
-     let posts = []
-     for (let i = 0; i < this.state.posts.length; i++) {
+    let posts = []
+    for (let i = 0; i < this.state.posts.length; i++) {
       const post = this.state.posts[i]
-      posts.push(<div>{post.content}</div>)
-     }
+      posts.push(
+        <Post>
+          {post.content}
+        </Post>
+      )
+    }
 
-     return (<div>{posts}</div>)
+    return (
+      <Wrapper>
+        {posts}
+      </Wrapper>
+    )
   }
 }
 

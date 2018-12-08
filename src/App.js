@@ -188,54 +188,35 @@ class App extends Component {
 
     render() {
         return (
-            <div className="Login">
-                <Wrapper>
-                  <Header>
-                    <LeftHeader>
-                      <Title>bulluber</Title>
-                      <SubTitle>community talk.</SubTitle>
-                    </LeftHeader>
-                    <RightHeader>
-                      <LoginButton 
-                        value="Submit" onClick={() => {
-                          if (this.state.isLoggedIn) {
-                            this.handleLogout()
-                          }
-                          else {
-                            this.handleLogin()
-                          }
-                        }}>
-                          {this.state.isLoggedIn && "logout"}
-                          {!this.state.isLoggedIn && (
-                            <GoogleImage src={require("./assets/google.png")}/>
-                          )}
-                      </LoginButton>
-                    </RightHeader>
-                  </Header>
-                  <Body>
-                    <Groups/>
-                    {this.state.isLoggedIn && <Posts/>}
-                  </Body>
-
-                  <CreatePostButton onClick={() => {
-                      this.handleGetAllPosts(this.state.currentUserUID);
+          <Wrapper>
+            <Header>
+              <LeftHeader>
+                <Title>bulluber</Title>
+                <SubTitle>community talk.</SubTitle>
+              </LeftHeader>
+              <RightHeader>
+                <LoginButton 
+                  value="Submit" onClick={() => {
+                    if (this.state.isLoggedIn) {
+                      this.handleLogout()
+                    }
+                    else {
+                      this.handleLogin()
+                    }
                   }}>
-                      View all posts
-                  </CreatePostButton>
-                  <CreatePostButton onClick={() => {
-                      this.handleGetUsersPosts(this.state.currentUserUID);
-                  }}>
-                      View my posts
-                  </CreatePostButton>
-                  <CreatePostButton onClick={() => {
-                      createGroup(this.state.group);
-                  }}>
-                      Make group
-                  </CreatePostButton>
+                    {this.state.isLoggedIn && "logout"}
+                    {!this.state.isLoggedIn && (
+                      <GoogleImage src={require("./assets/google.png")}/>
+                    )}
+                </LoginButton>
+              </RightHeader>
+            </Header>
+            <Body>
+              <Groups/>
+              {this.state.isLoggedIn && <Posts/>}
+            </Body>
 
-
-                </Wrapper>
-            </div>
+          </Wrapper>
         );
     }
 }
