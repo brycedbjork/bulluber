@@ -76,6 +76,21 @@ export const Login = () => {
 
 export const CreateProfile = (userId, name_in) => {
 
+    return new Promise ((resolve, reject) => {
+        firestore.collection("users").where("userId", "=", userId).get().then(results => {
+            if (!results.empty) {
+                reject("This user already exists")
+            } 
+            else{
+                firestore.collection("users").add({
+                    name: name_in,
+                }).then(doc => {
+                    resolve(doc.id)
+                }).catch(error => reject(error))
+            }
+        }).catch(error => reject(error))
+    })
+
     return firestore.collection("users").doc(userId).set({
         name: name_in
     })
@@ -95,3 +110,25 @@ export const Logout = () => {
         alert(error.message);
     });
 }
+
+
+
+export const LikePost = (userId, postId) => {
+    return new Promise ((resolve, reject) => {
+        firestore.collection("likes").where("userId", "=", userId).where("postId", "=", postId).get().then(results => {
+            if (!results.empty) {
+                reject("You've already liked this post")
+            } 
+            else{
+                firestore.collection("likes").add({
+                    userId: userId,
+                    postId: postId
+                }).then(doc => {
+                    resolve(doc.id)
+                }).catch(error => reject(error))
+            }
+        }).catch(error => reject(error))
+    })
+};
+
+
