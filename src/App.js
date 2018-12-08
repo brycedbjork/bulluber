@@ -61,7 +61,7 @@ class App extends Component {
             currentUserUID: 0,
             content: "",
 
-            group: "general",
+            group: "General",
 
             isLoggedIn: false
 
