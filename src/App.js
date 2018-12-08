@@ -199,7 +199,14 @@ class App extends Component {
                     </LeftHeader>
                     <RightHeader>
                       <LoginButton 
-                        value="Submit" onClick={() => this.state.isLoggedIn ? this.handleLogout : this.handleLogin}>
+                        value="Submit" onClick={() => {
+                          if (this.state.isLoggedIn) {
+                            this.handleLogout()
+                          }
+                          else {
+                            this.handleLogin()
+                          }
+                        }}>
                           {this.state.isLoggedIn && "logout"}
                           {!this.state.isLoggedIn && (
                             <GoogleImage src={require("./assets/google.png")}/>
