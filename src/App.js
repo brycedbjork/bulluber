@@ -114,24 +114,19 @@ class App extends Component {
         super(props);
 
         this.state = {
-            currentUserUID: 0,
-            content: "",
-            group: "General",
+            currentUserUID: null,
+            activeGroup: null,
             isLoggedIn: false
-
         };
 
-        this.handleChange = this.handleChange.bind(this);
         this.handleLogout = this.handleLogout.bind(this);
         this.handleLogin = this.handleLogin.bind(this);
+        this.updateActiveGroup = this.updateActiveGroup.bind(this);
     }
 
-
-    handleChange = event => {
-        this.setState({
-            [event.target.id]: event.target.value
-        });
-    };
+    updateActiveGroup(groupId) {
+      this.setState({activeGroup: groupId})
+    }
 
     handleLogin = () => {
         let uid = -1;
@@ -150,10 +145,9 @@ class App extends Component {
     };
 
     handleLogout = () => {
-        alert("Logging out!");
-        Logout();
-        this.setState({isLoggedIn: false}); 
-        console.log("logout is: ", this.state.isLoggedIn);
+        Logout()
+        this.setState({isLoggedIn: false})
+        console.log("logout is: ", this.state.isLoggedIn)
     };
 
 
@@ -212,7 +206,7 @@ class App extends Component {
               </RightHeader>
             </Header>
             <Body>
-              <Groups/>
+              <Groups updateActiveGroup={this.updateActiveGroup}/>
               {this.state.isLoggedIn && <Posts/>}
             </Body>
 
