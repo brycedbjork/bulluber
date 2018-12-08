@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {CreatePost, Login, Logout} from "./api"
+import firebase from "firebase"
 import styled from "styled-components"
 
 const Wrapper = styled.div`
@@ -14,6 +15,18 @@ const Wrapper = styled.div`
 `;
 
 const CreatePostButton = styled.button`
+  margin: 40px;
+  font-size: 24px;
+  padding: 10px;
+`;
+
+const LoginButton = styled.button`
+  margin: 40px;
+  font-size: 24px;
+  padding: 10px;
+`;
+
+const LogoutButton = styled.button`
   margin: 40px;
   font-size: 24px;
   padding: 10px;
@@ -39,7 +52,6 @@ const ContentInput = styled.textarea`
   border-radius: 3px;
 `;
 
-
 class App extends Component {
 
     constructor(props) {
@@ -47,8 +59,8 @@ class App extends Component {
 
         this.state = {
             currentUserUID: 0,
-            content:"",
-            group:""
+            content: "",
+            group: ""
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -69,7 +81,6 @@ class App extends Component {
         Login().then(function (result) {
             uid = result.user.uid;
             that.setState({currentUserUID: uid});
-            console.log(that.state.currentUserUID);
         }).catch(function (error) {
             alert(error.message);
         });
@@ -81,51 +92,60 @@ class App extends Component {
         Logout();
     };
 
+    handleMessagesDisplay = (uid) => {
+        var userId = firebase.auth().currentUser.uid;
+        var database = firebase.database();
+        database.ref('posts/').orderByChild('userId').once('value')
+            .then((snap)=> {
+                snap.forEach((snapshot)=> {
+                    console.log(snapshot.val().content)
+                })
+            });
+    };
 
     render() {
         return (
             <div className="Login">
                 <Wrapper>
 
-                    <CreatePostButton value="Submit" onClick={() => {
+                    <LoginButton value="Submit" onClick={() => {
                         {
                             this.handleLogin();
                         }
                     }}>
                         Login with Google
-                    </CreatePostButton>
+                    </LoginButton>
 
-                    <CreatePostButton value="Submit" onClick={() => {
+                    <LogoutButton value="Submit" onClick={() => {
                         {
                             this.handleLogout()
                         }
                     }}>
                         Logout
-                    </CreatePostButton>
+                    </LogoutButton>
 
-
-                    <form onSubmit={this.handleSubmit}>
+                    <form>
                         <label>
                             Group:
-                        <Input
-                            id="group"
-                            type="text"
-                            value={this.state.group}
-                            onChange={this.handleChange}
-                            defaultValue="Enter group name"
-                            inputColor="blue"
-                        />
+                            <Input
+                                id="group"
+                                type="text"
+                                value={this.state.group}
+                                onChange={this.handleChange}
+                                defaultValue="Enter group name"
+                                inputColor="blue"
+                            />
                         </label>
-                        <br></br>
+                        <br/>
                         <label>
                             Message:
-                        <ContentInput
-                            id="content"
-                            type="text"
-                            value={this.state.content}
-                            onChange={this.handleChange}
-                            inputColor="blue"
-                        />
+                            <ContentInput
+                                id="content"
+                                type="text"
+                                value={this.state.content}
+                                onChange={this.handleChange}
+                                inputColor="blue"
+                            />
                         </label>
                     </form>
                     <CreatePostButton onClick={() => {
@@ -133,10 +153,13 @@ class App extends Component {
                     }}>
                         Create Post!
                     </CreatePostButton>
+                    <CreatePostButton onClick={() => {
+                        this.handleMessagesDisplay(this.state.currentUserUID);
+                    }}>
+                        View posts
+                    </CreatePostButton>
                 </Wrapper>
             </div>
-
-
         );
     }
 }
