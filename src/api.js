@@ -15,30 +15,25 @@ let firestore = firebase.firestore();
 var provider = new firebase.auth.GoogleAuthProvider();
 
 export const CreatePost = (userId, groupName, content) => {
-    if (groupName === "") {
-        groupName = "General"
-    }
-    firestore.collection("posts").add({
-        userId,
-        groupName,
-        content
+    return new Promise((resolve, reject) => {
+        if (groupName === "") {
+            groupName = "General"
+        }
+        firestore.collection("posts").add({
+            userId,
+            groupName,
+            content
+        }).then(doc => {
+            resolve(doc.id)
+        }).catch(error => reject(error))
     })
-    // }).then(function (res) {
-    //     firestore.collection("posts").doc(res.id).set(
-    //         {
-    //             // postId: postId,
-    //         }, {merge: true}
-    //     );
-    //     alert("Message posted to group: " + groupName)
-    // });
 };
 
 
 export const CreateGroup = (GroupName) => {
-    // firestore.collection()
     return new Promise((resolve, reject) => {
         firestore.collection("groups").add({
-            groupName: groupName,
+            groupName: GroupName,
             timestamp: firebase.firestore.Timestamp.now().toMillis()
         }).then(doc => {
             resolve(doc.id)
@@ -47,23 +42,45 @@ export const CreateGroup = (GroupName) => {
 };
 
 export const GetUsersPosts = () => {
-    var userId = firebase.auth().currentUser.uid;
-    let firestore = firebase.firestore();
-    return firestore.collection('posts/').where("userId", "==", userId).get()
-    // console.log(firestore.collection('posts/').where("userId", "==",userId).get().then(function(snap){
-    //     snap.forEach(function(post){
-    //         console.log(post.id,"=>",post.data())
-    //     })
+    return new Promise((resolve, reject) => {
+        var userId = firebase.auth().currentUser.uid;
+        let firestore = firebase.firestore();
+        firestore.collection('posts').where("userId", "==", userId).get().then(docs => {
+            let formattedDocs = [];
+            docs.forEach(doc => {
+                formattedDocs.push({
+                    ...doc.data(),
+                    id: doc.id
+                })
+            });
+            resolve(formattedDocs);
+        }).catch(error => reject(error))
+    })
 };
 
 export const GetAllPosts = () => {
-    let firestore = firebase.firestore();
-    return firestore.collection('posts/').get()
+    return new Promise((resolve, reject) => {
+        let firestore = firebase.firestore();
+        firestore.collection('posts').get().then(docs => {
+            let formattedDocs = [];
+            docs.forEach(doc => {
+                formattedDocs.push({
+                    ...doc.data(),
+                    id: doc.id
+                })
+            });
+            resolve(formattedDocs);
+        }).catch(error => reject(error))
+    })
 };
 
 
 export const Login = () => {
-    return firebase.auth().signInWithPopup(provider)
+    return new Promise((resolve, reject) => {
+        firebase.auth().signInWithPopup(provider).then(res => {
+            resolve(res.user.uid);
+        }).catch(error => reject(error))
+    })
 };
 
 
@@ -72,19 +89,20 @@ export const CreateProfile = (userId, name_in) => {
     return firestore.collection("users").doc(userId).set({
         name: name_in
     })
-    .then(function() {
-        console.log("Document successfully written!");
-    })
-    .catch(function(error) {
-        console.error("Error writing document: ", error);
-    });
+        .then(function () {
+            console.log("Document successfully written!");
+        })
+        .catch(function (error) {
+            console.error("Error writing document: ", error);
+        });
 };
 
 
 export const Logout = () => {
-    firebase.auth().signOut().then(function () {
-        alert("Signed out successfully!")
-    }).catch(function (error) {
-        alert(error.message);
-    });
-}
+    return new Promise((resolve, reject) => {
+        firebase.auth().signOut().then(res => {
+            resolve();
+        }).catch(error => reject(error))
+
+    })
+};
