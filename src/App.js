@@ -1,8 +1,11 @@
 import React, {Component} from 'react';
-import {createGroup, CreatePost, GetAllPosts, GetUsersPosts, Login, Logout} from "./api"
+import {createGroup, CreatePost, GetAllPosts, GetUsersPosts, Login, Logout, CreateProfile} from "./api"
 import firebase from "firebase"
 import styled from "styled-components"
 import { colors } from "./lib/styles"
+import Groups from "./Groups"
+import Posts from "./Posts"
+
 
 const Wrapper = styled.div`
   width: 100%;
@@ -104,13 +107,6 @@ const Body = styled.div`
 
 `
 
-const Groups = styled.div`
-  
-`
-
-const Posts = styled.div`
-
-`
 
 class App extends Component {
 
@@ -151,7 +147,6 @@ class App extends Component {
             alert(error.message);
         });
 
-        this.setState({currentUserUID: firebase.auth().currentUser.uid});
         this.setState({isLoggedIn: true});
 
     };
@@ -176,6 +171,9 @@ class App extends Component {
         GetAllPosts().then(function(snap){
             snap.forEach(function(post){
                 console.log(post.id,"=>",post.data())
+                return(
+                  <div>I LOVE BUBBLES</div>
+                  )
             })
         })};
 
@@ -210,61 +208,32 @@ class App extends Component {
                     </RightHeader>
                   </Header>
                   <Body>
-                    <Groups>
-                      
-                    </Groups>
-                    <Posts>
-                      
-                    </Posts>
+                    <Groups/>
+                    <Posts/>
                   </Body>
-                    <form>
-                        <label>
-                            Group:
-                            <Input
-                                id="group"
-                                type="text"
-                                value={this.state.group}
-                                onChange={this.handleChange}
-                                defaultValue="Enter group name"
-                                inputColor="blue"
-                            />
-                        </label>
-                        <br/>
-                        <label>
-                            Message:
-                            <ContentInput
-                                id="content"
-                                type="text"
-                                value={this.state.content}
-                                onChange={this.handleChange}
-                                inputColor="blue"
-                            />
-                        </label>
-                    </form>
-                    <CreatePostButton onClick={() => {
-                        CreatePost(this.state.currentUserUID, this.state.group, this.state.content)
-                    }}>
-                        Create Post!
-                    </CreatePostButton>
-                    <CreatePostButton onClick={() => {
-                        this.handleGetAllPosts(this.state.currentUserUID);
-                    }}>
-                        View all posts
-                    </CreatePostButton>
-                    <CreatePostButton onClick={() => {
-                        this.handleGetUsersPosts(this.state.currentUserUID);
-                    }}>
-                        View my posts
-                    </CreatePostButton>
-                    <CreatePostButton onClick={() => {
-                        createGroup(this.state.group);
-                    }}>
-                        Make group
-                    </CreatePostButton>
+
+                  <CreatePostButton onClick={() => {
+                      this.handleGetAllPosts(this.state.currentUserUID);
+                  }}>
+                      View all posts
+                  </CreatePostButton>
+                  <CreatePostButton onClick={() => {
+                      this.handleGetUsersPosts(this.state.currentUserUID);
+                  }}>
+                      View my posts
+                  </CreatePostButton>
+                  <CreatePostButton onClick={() => {
+                      createGroup(this.state.group);
+                  }}>
+                      Make group
+                  </CreatePostButton>
+
+
                 </Wrapper>
             </div>
         );
     }
 }
+
 
 export default App;
