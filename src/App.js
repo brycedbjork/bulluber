@@ -63,7 +63,6 @@ class App extends Component {
 
             group: "general",
 
-            group: "",
             isLoggedIn: false
 
         };
@@ -97,6 +96,7 @@ class App extends Component {
 
 
         this.setState({currentUserUID: firebase.auth().currentUser.uid})
+
 
 
         this.setState({isLoggedIn: true}); 
