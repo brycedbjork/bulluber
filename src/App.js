@@ -93,13 +93,8 @@ class App extends Component {
             alert(error.message);
         });
 
-
-
-        this.setState({currentUserUID: firebase.auth().currentUser.uid})
-
-
-
-        this.setState({isLoggedIn: true}); 
+        this.setState({currentUserUID: firebase.auth().currentUser.uid});
+        this.setState({isLoggedIn: true});
 
     };
 
@@ -122,7 +117,7 @@ class App extends Component {
 
     render() {
       let button; 
-      if (this.state.isLoggedIn == false) {
+      if (this.state.isLoggedIn === false) {
         button = <LoginButton 
                   value="Submit" onClick={() => {
                     {
