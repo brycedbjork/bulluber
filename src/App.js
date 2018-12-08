@@ -60,8 +60,12 @@ class App extends Component {
         this.state = {
             currentUserUID: 0,
             content: "",
+
+            group: "general"
+
             group: "",
             isLoggedIn: false
+
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -86,6 +90,10 @@ class App extends Component {
             alert(error.message);
         });
 
+
+        this.setState({currentUserUID: firebase.auth().currentUser.uid})
+        alert(this.state.currentUserUID);
+
         this.setState({isLoggedIn: true}); 
 
     };
@@ -97,7 +105,7 @@ class App extends Component {
         console.log("logout is: ", this.state.isLoggedIn);
     };
 
-    handleMessagesDisplay = (uid) => {
+    handleMessagesDisplay = () => {
         var userId = firebase.auth().currentUser.uid;
         let firestore = firebase.firestore();
         console.log(firestore.collection('posts/').where("userId", "==",userId).get().then(function(snap){
@@ -157,7 +165,7 @@ class App extends Component {
                         </label>
                     </form>
                     <CreatePostButton onClick={() => {
-                        CreatePost(this.state.currentUserUID, "test group id", this.state.content)
+                        CreatePost(this.state.currentUserUID, this.state.group, this.state.content)
                     }}>
                         Create Post!
                     </CreatePostButton>
