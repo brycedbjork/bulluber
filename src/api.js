@@ -25,7 +25,12 @@ export const CreatePost = (userId, groupName, content) => {
         firestore.collection("groups").doc(groupName).collection(postId).add({
                 userId: userId,
                 content:content
-        })
+        });
+        firestore.collection("posts").doc(postId).set(
+            {
+                postId:postId,
+            },{merge:true}
+        )
 
 	});
 };
