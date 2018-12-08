@@ -24,7 +24,7 @@ const CreatePostInput = styled.textarea`
   outline: none;
   border-radius: 10px;
   font-size: 20px;
-  line-height: 20px;
+  line-height: 24px;
   font-weight: 600;
   padding: 20px;
   padding-bottom: 60px;
@@ -61,6 +61,11 @@ const PostButton = styled.div`
   font-weight: 600;
   font-size: 18px;
   border-radius: 10px;
+  transition: all 150ms cubic-bezier(0.21, 0.94, 0.64, 0.99);
+  :hover {
+    cursor: default;
+    transform: scale(1.05);
+  }
 `
 
 const PostArrow = styled.img`
