@@ -85,7 +85,7 @@ export const GetAllPosts = () => {
 export const Login = () => {
     return new Promise((resolve, reject) => {
         firebase.auth().signInWithPopup(provider).then(res => {
-            resolve(res.user.uid);
+            resolve(res);
         }).catch(error => reject(error))
     })
 };
