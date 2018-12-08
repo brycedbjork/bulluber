@@ -9,21 +9,10 @@ class Groups extends Component {
       groups: [],
       createGroupName: "",
     }
-    this.createGroup = this.createGroup.bind(this)
   }
 
   componentDidMount() {
     
-  }
-
-  createGroup() {
-    if (this.state.createGroupName != "") {
-      CreateGroup(this.state).then(groupId => {
-        this.props.updateActiveGroup(groupId)
-      }).catch(error => {
-        alert("There was a problem with creating the group")
-      })
-    }
   }
 
   render () {

@@ -56,6 +56,10 @@ const ContentInput = styled.textarea`
 `;
 
 const Header = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   height: 80px;
   box-sizing: border-box;
   padding-top: 20px;
@@ -104,7 +108,10 @@ const GoogleImage = styled.img`
 `
 
 const Body = styled.div`
-
+  padding-top: 100px;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
 `
 
 
@@ -183,6 +190,10 @@ class App extends Component {
     render() {
         return (
           <Wrapper>
+            <Body>
+              <Groups updateActiveGroup={this.updateActiveGroup}/>
+              <Posts/>
+            </Body>
             <Header>
               <LeftHeader>
                 <Title>bulluber</Title>
@@ -205,11 +216,6 @@ class App extends Component {
                 </LoginButton>
               </RightHeader>
             </Header>
-            <Body>
-              <Groups updateActiveGroup={this.updateActiveGroup}/>
-              <Posts/>
-            </Body>
-
           </Wrapper>
         );
     }

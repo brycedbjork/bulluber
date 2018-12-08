@@ -4,7 +4,7 @@ import styled from "styled-components"
 import {colors} from "./lib/styles"
 
 const Wrapper = styled.div`
-
+  flex: 1;
 `
 
 const Post = styled.div`
@@ -12,21 +12,42 @@ const Post = styled.div`
 `
 
 const CreatePost = styled.div`
-  width: 300px;
+  width: 400px;
   height: 200px;
   position: relative;
 `
 
-const CreatePostInput = styled.input`
-  width: 300px;
+const CreatePostInput = styled.textarea`
+  resize: none;
+  width: 400px;
   height: 200px;
   outline: none;
+  border-radius: 10px;
+  font-size: 20px;
+  line-height: 20px;
+  font-weight: 600;
+  padding: 20px;
+  padding-bottom: 60px;
+  box-sizing: border-box;
+  border: 1px solid rgba(19, 23, 39, 0.1);
 `
 
 const Footer = styled.div`
   position: absolute;
-  bottom: 0;
   display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  bottom: 0;
+  width: 100%;
+  box-sizing: border-box;
+`
+
+const FooterText = styled.p`
+  font-size: 16px;
+  font-weight: 500;
+  color: ${colors.gray};
 `
 
 const PostButton = styled.div`
@@ -39,12 +60,13 @@ const PostButton = styled.div`
   color: #ffffff;
   font-weight: 600;
   font-size: 18px;
-  border-radius: 5px;
+  border-radius: 10px;
 `
 
 const PostArrow = styled.img`
   height: 12px;
   width: auto;
+  margin-left: 10px;
 `
 
 class Posts extends Component {
@@ -75,6 +97,7 @@ class Posts extends Component {
         <CreatePost>
           <CreatePostInput placeholder="what's up? let's talk"/>
           <Footer>
+            <FooterText>in Group Name</FooterText>
             <PostButton>
               Post
               <PostArrow src={require("./assets/arrow.png")}/>
