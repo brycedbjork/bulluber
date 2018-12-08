@@ -100,6 +100,10 @@ const GoogleImage = styled.img`
   margin-top: 5px;
 `
 
+const Body = styled.div`
+
+`
+
 const Groups = styled.div`
   
 `
@@ -142,7 +146,7 @@ class App extends Component {
             name = result.user.displayName;
             console.log(result)
             that.setState({currentUserUID: uid});
-            CreateProfile(that.state.currentUserUID, name)
+            // CreateProfile(that.state.currentUserUID, name)
         }).catch(function (error) {
             alert(error.message);
         });
