@@ -85,6 +85,8 @@ class App extends Component {
             alert(error.message);
         });
 
+        this.setState({currentUserUID: firebase.auth().currentUser.uid})
+        alert(this.state.currentUserUID);
     };
 
     handleLogout = () => {
