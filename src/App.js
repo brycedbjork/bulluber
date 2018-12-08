@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
-import {createGroup, CreatePost, GetAllPosts, GetUsersPosts, Login, Logout} from "./api"
+import {createGroup, CreatePost, GetAllPosts, GetUsersPosts, Login, Logout, CreateProfile} from "./api"
 import firebase from "firebase"
 import styled from "styled-components"
+
 
 const Wrapper = styled.div`
   width: 100%;
@@ -51,6 +52,41 @@ const ContentInput = styled.textarea`
   border: none;
   border-radius: 3px;
 `;
+
+
+class DisplayPosts extends Component {
+  constructor (props){
+    super(props);
+    this.state = {
+      posts: [],
+      index: 0
+    }
+  }
+
+  componentDidMount() {
+    var userId = firebase.auth().currentUser.uid;
+    let firestore = firebase.firestore();
+    let currentPosts = this.state.posts
+    console.log("the state is: ", this.state.posts)
+    firestore.collection('posts/').where("userId", "==",userId).get().then(snap => {
+        snap.forEach(post =>{
+            currentPosts[this.state.index] = post.data();
+            console.log("new post is: ", currentPosts)
+            this.setState({posts: currentPosts, index: this.state.index + 1})
+        })
+    })
+  } 
+
+  render () {
+     let posts = []
+     for (let i = 0; i < this.state.posts.length; i++) {
+      const post = this.state.posts[i]
+      posts.push(<div>{post.content}</div>)
+     }
+
+     return (<div>{posts}</div>)
+  }
+}
 
 class App extends Component {
 
@@ -118,6 +154,9 @@ class App extends Component {
         GetAllPosts().then(function(snap){
             snap.forEach(function(post){
                 console.log(post.id,"=>",post.data())
+                return(
+                  <div>I LOVE BUBBLES</div>
+                  )
             })
         })};
 
@@ -157,7 +196,9 @@ class App extends Component {
             <div className="Login">
                 <Wrapper>
                     {button}
-                    <form>
+                    {this.state.isLoggedIn == true && 
+                      <div>
+                        <form>
                         <label>
                             Group:
                             <Input
@@ -180,12 +221,17 @@ class App extends Component {
                                 inputColor="blue"
                             />
                         </label>
-                    </form>
-                    <CreatePostButton onClick={() => {
-                        CreatePost(this.state.currentUserUID, this.state.group, this.state.content)
-                    }}>
-                        Create Post!
-                    </CreatePostButton>
+                      </form>
+                      <CreatePostButton onClick={() => {
+                          CreatePost(this.state.currentUserUID, "test group id", this.state.content)
+                      }}>
+                          Create Post!
+                      </CreatePostButton>
+                      <div>
+                        <DisplayPosts />
+                      </div>
+                      </div>
+                    }
                     <CreatePostButton onClick={() => {
                         this.handleGetAllPosts(this.state.currentUserUID);
                     }}>
@@ -201,10 +247,13 @@ class App extends Component {
                     }}>
                         Make group
                     </CreatePostButton>
+
+
                 </Wrapper>
             </div>
         );
     }
 }
+
 
 export default App;
