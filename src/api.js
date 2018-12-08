@@ -11,15 +11,23 @@ var config = {
 };
 firebase.initializeApp(config);
 
-let firestore = firebase.firestore()
+let firestore = firebase.firestore();
 var provider = new firebase.auth.GoogleAuthProvider();
 
-export const CreatePost = (userId, groupId, content) => {
-	return firestore.collection("posts").add({
+export const CreatePost = (userId, groupName, content) => {
+    let postId = -1;
+    	firestore.collection("posts").add({
 		userId,
-		groupId,
+		groupName,
 		content
-	})
+	}).then(function(res){
+	    postId = res.id;
+        firestore.collection("groups").doc(groupName).collection(postId).add({
+                userId: userId,
+                content:content
+        })
+
+	});
 };
 
 export const CreateProfile = (userId, name) => {
