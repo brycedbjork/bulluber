@@ -32,7 +32,7 @@ export const CreatePost = (userId, groupName, content) => {
 export const CreateGroup = (groupName) => {
     // firestore.collection()
     return new Promise((resolve, reject) => {
-        firestore.collection("groups").where("groupName", "=", groupName).get().then(results => {
+        firestore.collection("groups").where("groupName", "==", groupName).get().then(results => {
             if (!results.empty) {
                 reject("Group with name already exists")
             }
@@ -94,7 +94,7 @@ export const Login = () => {
 export const CreateProfile = (userId, name_in) => {
 
     return new Promise ((resolve, reject) => {
-        firestore.collection("users").where("userId", "=", userId).get().then(results => {
+        firestore.collection("users").where("userId", "==", userId).get().then(results => {
             if (!results.empty) {
                 reject("This user already exists")
             } 
@@ -111,7 +111,7 @@ export const CreateProfile = (userId, name_in) => {
 
 export const LikePost = (userId, postId) => {
     return new Promise ((resolve, reject) => {
-        firestore.collection("likes").where("userId", "=", userId).where("postId", "=", postId).get().then(results => {
+        firestore.collection("likes").where("userId", "==", userId).where("postId", "==", postId).get().then(results => {
             if (!results.empty) {
                 reject("You've already liked this post")
             } 
