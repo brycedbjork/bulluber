@@ -39,6 +39,14 @@ export const CreatePost = (userId, groupName, content) => {
 
 };
 
+export const CreateProfile = (userId, name) => {
+  return firestore.collection("users").add({
+  	userId,
+  	name
+  })
+};
+
+
 export const Login = () => {
         return firebase.auth().signInWithPopup(provider)
 };
