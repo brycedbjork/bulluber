@@ -2,16 +2,18 @@ import React, {Component} from 'react';
 import {createGroup, CreatePost, GetAllPosts, GetUsersPosts, Login, Logout, CreateProfile} from "./api"
 import firebase from "firebase"
 import styled from "styled-components"
+import { colors } from "./lib/styles"
+import Groups from "./Groups"
+import Posts from "./Posts"
 
 
 const Wrapper = styled.div`
   width: 100%;
   min-height: 800px;
   box-sizing: border-box;
-  padding: 40px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
 `;
 
@@ -22,9 +24,9 @@ const CreatePostButton = styled.button`
 `;
 
 const LoginButton = styled.button`
-  margin: 40px;
-  font-size: 24px;
-  padding: 10px;
+  font-size: 20px;
+  border: none;
+  font-weight: 600;
 `;
 
 const LogoutButton = styled.button`
@@ -53,40 +55,58 @@ const ContentInput = styled.textarea`
   border-radius: 3px;
 `;
 
+const Header = styled.div`
+  height: 80px;
+  box-sizing: border-box;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-left: 40px;
+  padding-right: 40px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: rgba(19, 23, 39, 0.1) 0px 4px 10px 0px;
+`
 
-class DisplayPosts extends Component {
-  constructor (props){
-    super(props);
-    this.state = {
-      posts: [],
-      index: 0
-    }
-  }
+const LeftHeader = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+`
 
-  componentDidMount() {
-    var userId = firebase.auth().currentUser.uid;
-    let firestore = firebase.firestore();
-    let currentPosts = this.state.posts
-    console.log("the state is: ", this.state.posts)
-    firestore.collection('posts/').where("userId", "==",userId).get().then(snap => {
-        snap.forEach(post =>{
-            currentPosts[this.state.index] = post.data();
-            console.log("new post is: ", currentPosts)
-            this.setState({posts: currentPosts, index: this.state.index + 1})
-        })
-    })
-  } 
+const RightHeader = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+`
 
-  render () {
-     let posts = []
-     for (let i = 0; i < this.state.posts.length; i++) {
-      const post = this.state.posts[i]
-      posts.push(<div>{post.content}</div>)
-     }
+const Title = styled.h1`
+  font-size: 24px;
+  font-weight: 600;
+  color: ${colors.nearBlack};
+`
 
-     return (<div>{posts}</div>)
-  }
-}
+const SubTitle = styled.h2`
+  font-size: 20px;
+  font-weight: 500;
+  color: ${colors.gray};
+  margin-left: 10px;
+`
+
+const GoogleImage = styled.img`
+  height: 30px;
+  width: auto;
+  margin-top: 5px;
+`
+
+const Body = styled.div`
+
+`
+
 
 class App extends Component {
 
@@ -96,9 +116,7 @@ class App extends Component {
         this.state = {
             currentUserUID: 0,
             content: "",
-
             group: "General",
-
             isLoggedIn: false
 
         };
@@ -123,13 +141,11 @@ class App extends Component {
             uid = result.user.uid;
             name = result.user.displayName;
             console.log(result)
-            that.setState({currentUserUID: firebase.auth().currentUser.uid});
-            CreateProfile(that.state.currentUserUID, name)
+            that.setState({currentUserUID: uid, isLoggedIn: true});
+            // CreateProfile(that.state.currentUserUID, name)
         }).catch(function (error) {
             alert(error.message);
         });
-
-        this.setState({isLoggedIn: true});
 
     };
 
@@ -171,81 +187,51 @@ class App extends Component {
     // };
 
     render() {
-      let button; 
-      if (this.state.isLoggedIn === false) {
-        button = <LoginButton 
-                  value="Submit" onClick={() => {
-                    {
-                      this.handleLogin();
-                    }
-                  }}>
-                    Login with Google
-                  </LoginButton>
-      } else {
-        button = <LogoutButton 
-                    value="Submit" onClick={() => {
-                      {
-                        this.handleLogout()
-                      }
-                    }}>
-                      Logout
-                    </LogoutButton>
-      }
         return (
             <div className="Login">
                 <Wrapper>
-                    {button}
-                    {this.state.isLoggedIn == true && 
-                      <div>
-                        <form>
-                        <label>
-                            Group:
-                            <Input
-                                id="group"
-                                type="text"
-                                value={this.state.group}
-                                onChange={this.handleChange}
-                                defaultValue="Enter group name"
-                                inputColor="blue"
-                            />
-                        </label>
-                        <br/>
-                        <label>
-                            Message:
-                            <ContentInput
-                                id="content"
-                                type="text"
-                                value={this.state.content}
-                                onChange={this.handleChange}
-                                inputColor="blue"
-                            />
-                        </label>
-                      </form>
-                      <CreatePostButton onClick={() => {
-                          CreatePost(this.state.currentUserUID, "test group id", this.state.content)
-                      }}>
-                          Create Post!
-                      </CreatePostButton>
-                      <div>
-                        <DisplayPosts />
-                      </div>
-                      </div>
-                    }
-                    <CreatePostButton onClick={() => {
-                        this.handleGetAllPosts(this.state.currentUserUID);
-                    }}>
-                        View all posts
-                    </CreatePostButton>
-                    <CreatePostButton onClick={() => {
-                        this.handleGetUsersPosts(this.state.currentUserUID);
-                    }}>
-                        View my posts
-                    </CreatePostButton>
-                    <CreatePostButton onClick={() => {
-                        createGroup(this.state.group);
-                    }}>
-                        Make group
-                    </CreatePostButton>
+                  <Header>
+                    <LeftHeader>
+                      <Title>bulluber</Title>
+                      <SubTitle>community talk.</SubTitle>
+                    </LeftHeader>
+                    <RightHeader>
+                      <LoginButton 
+                        value="Submit" onClick={() => {
+                          if (this.state.isLoggedIn) {
+                            this.handleLogout()
+                          }
+                          else {
+                            this.handleLogin()
+                          }
+                        }}>
+                          {this.state.isLoggedIn && "logout"}
+                          {!this.state.isLoggedIn && (
+                            <GoogleImage src={require("./assets/google.png")}/>
+                          )}
+                      </LoginButton>
+                    </RightHeader>
+                  </Header>
+                  <Body>
+                    <Groups/>
+                    {this.state.isLoggedIn && <Posts/>}
+                  </Body>
+
+                  <CreatePostButton onClick={() => {
+                      this.handleGetAllPosts(this.state.currentUserUID);
+                  }}>
+                      View all posts
+                  </CreatePostButton>
+                  <CreatePostButton onClick={() => {
+                      this.handleGetUsersPosts(this.state.currentUserUID);
+                  }}>
+                      View my posts
+                  </CreatePostButton>
+                  <CreatePostButton onClick={() => {
+                      createGroup(this.state.group);
+                  }}>
+                      Make group
+                  </CreatePostButton>
 
 
                 </Wrapper>
