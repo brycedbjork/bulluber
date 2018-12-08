@@ -65,11 +65,19 @@ export const createGroup = (groupName) => {
     export const Login = () => {
         return firebase.auth().signInWithPopup(provider)
     };
-export const CreateProfile = (userId, name) => {
-  return firestore.collection("users").add({
-  	userId,
-  	name
-  })
+
+
+    export const CreateProfile = (userId, name_in) => {
+
+return firestore.collection("users").doc(userId).set({
+    name: name_in
+})
+.then(function() {
+    console.log("Document successfully written!");
+})
+.catch(function(error) {
+    console.error("Error writing document: ", error);
+});
 };
 
 
