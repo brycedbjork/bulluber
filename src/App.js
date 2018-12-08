@@ -60,7 +60,8 @@ class App extends Component {
         this.state = {
             currentUserUID: 0,
             content: "",
-            group: ""
+            group: "",
+            isLoggedIn: false
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -85,11 +86,15 @@ class App extends Component {
             alert(error.message);
         });
 
+        this.setState({isLoggedIn: true}); 
+
     };
 
     handleLogout = () => {
         alert("Logging out!");
         Logout();
+        this.setState({isLoggedIn: false}); 
+        console.log("logout is: ", this.state.isLoggedIn);
     };
 
     handleMessagesDisplay = (uid) => {
@@ -103,26 +108,30 @@ class App extends Component {
     };
 
     render() {
+      let button; 
+      if (this.state.isLoggedIn == false) {
+        button = <LoginButton 
+                  value="Submit" onClick={() => {
+                    {
+                      this.handleLogin();
+                    }
+                  }}>
+                    Login with Google
+                  </LoginButton>
+      } else {
+        button = <LogoutButton 
+                    value="Submit" onClick={() => {
+                      {
+                        this.handleLogout()
+                      }
+                    }}>
+                      Logout
+                    </LogoutButton>
+      }
         return (
             <div className="Login">
                 <Wrapper>
-
-                    <LoginButton value="Submit" onClick={() => {
-                        {
-                            this.handleLogin();
-                        }
-                    }}>
-                        Login with Google
-                    </LoginButton>
-
-                    <LogoutButton value="Submit" onClick={() => {
-                        {
-                            this.handleLogout()
-                        }
-                    }}>
-                        Logout
-                    </LogoutButton>
-
+                    {button}
                     <form>
                         <label>
                             Group:
