@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {CreatePost, Login, Logout, CreateProfile} from "./api"
+import {createGroup, CreatePost, GetAllPosts, GetUsersPosts, Login, Logout} from "./api"
 import firebase from "firebase"
 import styled from "styled-components"
 import { colors } from "./lib/styles"
@@ -159,15 +159,32 @@ class App extends Component {
         console.log("logout is: ", this.state.isLoggedIn);
     };
 
-    handleMessagesDisplay = () => {
-        var userId = firebase.auth().currentUser.uid;
-        let firestore = firebase.firestore();
-        console.log(firestore.collection('posts/').where("userId", "==",userId).get().then(function(snap){
+
+    handleGetUsersPosts = () => {
+        GetUsersPosts().then(function(snap){
+                snap.forEach(function(post){
+                    console.log(post.id,"=>",post.data())
+                })
+    })};
+
+
+    handleGetAllPosts = () => {
+        GetAllPosts().then(function(snap){
             snap.forEach(function(post){
                 console.log(post.id,"=>",post.data())
             })
-        }))
-    };
+        })};
+
+    //
+    // handleMessagesDisplay = () => {
+    //     var userId = firebase.auth().currentUser.uid;
+    //     let firestore = firebase.firestore();
+    //     console.log(firestore.collection('posts/').where("userId", "==",userId).get().then(function(snap){
+    //         snap.forEach(function(post){
+    //             console.log(post.id,"=>",post.data())
+    //         })
+    //     }))
+    // };
 
     render() {
         return (
@@ -226,9 +243,19 @@ class App extends Component {
                         Create Post!
                     </CreatePostButton>
                     <CreatePostButton onClick={() => {
-                        this.handleMessagesDisplay(this.state.currentUserUID);
+                        this.handleGetAllPosts(this.state.currentUserUID);
                     }}>
-                        View posts
+                        View all posts
+                    </CreatePostButton>
+                    <CreatePostButton onClick={() => {
+                        this.handleGetUsersPosts(this.state.currentUserUID);
+                    }}>
+                        View my posts
+                    </CreatePostButton>
+                    <CreatePostButton onClick={() => {
+                        createGroup(this.state.group);
+                    }}>
+                        Make group
                     </CreatePostButton>
                 </Wrapper>
             </div>
