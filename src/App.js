@@ -87,13 +87,12 @@ class App extends Component {
             uid = result.user.uid;
             name = result.user.displayName;
             console.log(result)
-            that.setState({currentUserUID: uid});
+            that.setState({currentUserUID: firebase.auth().currentUser.uid});
             CreateProfile(that.state.currentUserUID, name)
         }).catch(function (error) {
             alert(error.message);
         });
 
-        this.setState({currentUserUID: firebase.auth().currentUser.uid});
         this.setState({isLoggedIn: true});
 
     };
