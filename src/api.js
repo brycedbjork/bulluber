@@ -12,38 +12,42 @@ var config = {
 firebase.initializeApp(config);
 
 let firestore = firebase.firestore();
+const settings = {timestampsInSnapshots: true};
+firestore.settings(settings)
 var provider = new firebase.auth.GoogleAuthProvider();
 
-export const CreatePost = (userId, groupId, content) => {
+export const CreatePost = (userId, userName, groupId, content) => {
     return new Promise((resolve, reject) => {
-        if (!groupId) {
-            // get id of general group
-        }
-        else {
-            firestore.collection("posts").add({
-                userId,
-                groupId,
-                content
-            }).then(doc => {
-                resolve(doc.id)
-            }).catch(error => reject(error))
-        }
+        firestore.collection("posts").add({
+            userId,
+            authorInitials: userName.split(" ").map(word => word[0]).join(""),
+            groupId,
+            content,
+            likedBy: [],
+            timestamp: firebase.firestore.Timestamp.now().toMillis(),
+        }).then(doc => {
+            resolve(doc.id)
+        }).catch(error => reject(error))
     })
 };
 
-export const CreateGroup = (groupName) => {
+export const CreateGroup = (groupName, community, uid) => {
     // firestore.collection()
     return new Promise((resolve, reject) => {
-        firestore.collection("groups").where("groupName", "==", groupName).get().then(results => {
+        firestore.collection("groups").where("community", "==", community).where("name", "==", groupName).get().then(results => {
             if (!results.empty) {
-                reject("Group with name already exists")
+                resolve("Group with name already exists")
             }
             else {
                 firestore.collection("groups").add({
-                    groupName: groupName,
+                    name: groupName,
+                    community: community,
+                    createdBy: uid,
                     timestamp: firebase.firestore.Timestamp.now().toMillis()
                 }).then(doc => {
-                    resolve(doc.id)
+                    JoinGroup(doc.id, uid).then(() => {
+                        resolve(doc.id)
+                    }).catch(error => reject(error))
                 }).catch(error => reject(error))
             }
         }).catch(error => reject(error))
@@ -68,6 +72,57 @@ export const JoinGroup = (groupId, uid) => {
         })
     })
 };
+
+export const GetGeneralGroup = (community, uid) => {
+    return new Promise((resolve, reject) => {
+        firestore.collection("groups").where("community", "==", community).where("name", "==", "General").get().then(results => {
+            if (!results.empty) {
+                resolve(results.docs[0].id)
+            }
+            else {
+                CreateGroup("General", community, uid).then(groupId => {
+                    resolve(groupId)
+                }).catch(error => reject(error))
+            }
+        }).catch(error => reject(error))
+    })
+}
+
+export const WatchUserGroups = (uid, successCallback, errorCallback) => {
+    // get user groups from membership table
+    let groupListeners = []
+    firestore.collection("memberships").where("uid", "==", uid).onSnapshot(querySnap => {
+        for (let i = 0; i < groupListeners.length; i++) {
+            groupListeners.pop()()
+        }
+        querySnap.docs.forEach(doc => {
+            groupListeners.push(firestore.collection("groups").doc(doc.data().groupId).onSnapshot(docSnap => {
+                successCallback(docSnap.id, docSnap.data())
+            }, error => errorCallback(error)))
+        })
+    }, error => errorCallback(error))
+}
+
+export const WatchCommunityGroups = (community, successCallback, errorCallback) => {
+    firestore.collection("groups").where("community", "==", community).onSnapshot(querySnap => {
+        querySnap.docs.forEach(doc => {
+            successCallback(doc.id, doc.data())
+        })
+    }, error => errorCallback(error))
+}
+
+export const WatchGroupPosts = (groupId, successCallback, errorCallback) => {
+  firestore.collection("posts").where("groupId", "==", groupId).orderBy("timestamp", "desc").onSnapshot(querySnap => {
+    let posts = []
+    querySnap.docs.forEach(doc => {
+      posts.push({
+        id: doc.id,
+        ...doc.data()
+      })
+    })
+    successCallback(posts)
+  }, error => errorCallback(error))
+}
 
 export const GetUsersPosts = () => {
     return new Promise((resolve, reject) => {
@@ -106,44 +161,57 @@ export const GetAllPosts = () => {
 export const Login = () => {
     return new Promise((resolve, reject) => {
         firebase.auth().signInWithPopup(provider).then(res => {
-            resolve(res);
+            const user = {
+                uid: res.user.uid,
+                email: res.user.email,
+                name: res.user.displayName,
+                community: res.user.email.split("@")[1]
+            }
+            CreateUser(user.uid, user.name, user.community, user.email).then(() => {
+                GetGeneralGroup(user.community, user.uid).then(groupId => {
+                  resolve({user, groupId})
+                }).catch(error => reject(error))
+            }).catch(error => reject(error))
         }).catch(error => reject(error))
     })
 };
 
 
-export const CreateProfile = (userId, name_in) => {
-
+export const CreateUser = (uid, name, community, email) => {
     return new Promise((resolve, reject) => {
-        firestore.collection("users").where("userId", "==", userId).get().then(results => {
-            if (!results.empty) {
-                reject("This user already exists")
+        firestore.collection("users").doc(uid).get().then(doc => {
+            if (doc.exists) {
+                resolve("User already exists")
             }
             else {
-                firestore.collection("users").add({
-                    name: name_in,
-                }).then(doc => {
-                    resolve(doc.id)
+                firestore.collection("users").doc(uid).set({
+                    name: name,
+                    community: community,
+                    email: email,
+                }, {merge: true}).then(() => {
+                    resolve()
                 }).catch(error => reject(error))
             }
         }).catch(error => reject(error))
     })
 };
 
-export const LikePost = (userId, postId) => {
+export const ToggleLikePost = (userId, postId) => {
     return new Promise((resolve, reject) => {
-        firestore.collection("likes").where("userId", "==", userId).where("postId", "==", postId).get().then(results => {
-            if (!results.empty) {
-                reject("You've already liked this post")
-            }
-            else {
-                firestore.collection("likes").add({
-                    userId: userId,
-                    postId: postId
-                }).then(doc => {
-                    resolve(doc.id)
-                }).catch(error => reject(error))
-            }
+      console.log(userId, postId)
+        firestore.collection("posts").doc(postId).get().then(doc => {
+          let newLikes = doc.data().likedBy
+          if (doc.data().likedBy.includes(userId)) {
+            // user already liked the post => unlike it
+            var index = newLikes.indexOf(userId);
+            if (index !== -1) newLikes.splice(index, 1);
+          }
+          else {
+            newLikes.push(userId)
+          }
+          firestore.collection("posts").doc(postId).update({
+            likedBy: newLikes
+          }).then(() => resolve()).catch(error => reject(error))
         }).catch(error => reject(error))
     })
 };

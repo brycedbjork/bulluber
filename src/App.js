@@ -28,12 +28,18 @@ const LoginButton = styled.button`
   font-size: 20px;
   border: none;
   font-weight: 600;
+  :focus {
+    outline: none;
+  }
 `;
 
 const LogoutButton = styled.button`
   margin: 40px;
   font-size: 24px;
   padding: 10px;
+  :focus {
+    outline: none;
+  }
 `;
 
 const Header = styled.div`
@@ -103,6 +109,7 @@ const Body = styled.div`
 const LogInOut = styled.div`
   font-size: 20px;
   color: ${colors.nearBlack};
+  font-weight: 500;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -118,24 +125,41 @@ class App extends Component {
 
     constructor(props) {
         super(props)
+        this.userInitialState = {
+          uid: null,
+          email: null,
+          name: null,
+          community: null
+        }
         this.state = {
-            uid: null,
-            activeGroup: null
+            user: this.userInitialState,
+            activeGroup: {
+              id: null,
+              name: null
+            }
         };
         this.updateActiveGroup = this.updateActiveGroup.bind(this);
     }
 
-    updateActiveGroup(groupId) {
-      this.setState({activeGroup: groupId})
+    updateActiveGroup(groupId, groupName) {
+      this.setState({activeGroup: {
+        id: groupId,
+        name: groupName
+      }})
     }
 
     render() {
         return (
           <Wrapper>
             <Body>
-              <Posts uid={this.state.uid} activeGroup={this.state.activeGroup}/>
+              <Posts 
+                user={this.state.user} 
+                activeGroup={this.state.activeGroup}/>
             </Body>
-            <Groups uid={this.state.uid} updateActiveGroup={this.updateActiveGroup}/>
+            <Groups
+              user={this.state.user} 
+              activeGroup={this.state.activeGroup} 
+              updateActiveGroup={this.updateActiveGroup}/>
             <Header>
               <LeftHeader>
                 <Title>bulluber</Title>
@@ -146,21 +170,29 @@ class App extends Component {
                   value="Submit" onClick={() => {
                     if (this.state.uid) {
                       Logout().then(() => {
-                        this.setState({uid: null})
+                        this.setState({user: this.userInitialState})
                       }).catch(error => {
                         alert("An error occurred while logging out")
+                        console.log(error)
                       })
                     }
                     else {
-                      Login().then(uid => {
-                        this.setState({uid})
+                      Login().then(results => {
+                        this.setState({
+                          user: results.user,
+                          activeGroup: {
+                            id: results.groupId,
+                            name: "General"
+                          } 
+                        })
                       }).catch(error => {
                         alert("An error occurred while logging in")
+                        console.log(error)
                       })
                     }
                   }}>
-                    {this.state.uid && (<LogInOut>logout</LogInOut>)}
-                    {!this.state.uid && (
+                    {this.state.user.uid && (<LogInOut>{this.state.user.name} (logout)</LogInOut>)}
+                    {!this.state.user.uid && (
                       <LogInOut>
                         sign in with <GoogleImage src={require("./assets/google.png")}/>
                       </LogInOut>
