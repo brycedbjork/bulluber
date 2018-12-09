@@ -2,7 +2,7 @@ import React, {Component} from "react"
 import firebase from "firebase"
 import styled from "styled-components"
 import {colors} from "./lib/styles"
-import { CreatePost, WatchGroupPosts } from "./api"
+import { CreatePost, WatchGroupPosts, ToggleLikePost } from "./api"
 
 const Wrapper = styled.div`
   padding: 40px;
@@ -130,12 +130,12 @@ const PostLikes = styled.div`
   font-weight: 600;
 `
   
-const Post = ({content, likes, authorInitials}) => {
+const Post = ({content, likes, authorInitials, liked, onClick}) => {
   return (
-    <PostWrapper>
+    <PostWrapper onClick={onClick}>
       <PostContent>{content}</PostContent>
       <PostLikes>
-        <HeartImage src={require("./assets/heart.png")}/>
+        <HeartImage src={liked ? require("./assets/heart.png") : require("./assets/heartGray.png")}/>
         {likes}
       </PostLikes>
       <PostAuthor>-{authorInitials}</PostAuthor>
@@ -175,11 +175,21 @@ class Posts extends Component {
   }
 
   handlePost() {
-    CreatePost(this.props.user.uid, this.props.user.name, this.props.activeGroup.id, this.state.createPostText).then(() => {
-      this.setState({createPostText: ""})
-    }).catch(error => {
-      alert("Could not post: "+error)
-    })
+    if (this.props.user.uid && this.props.activeGroup.id) {
+      if (this.state.createPostText != "") {
+        CreatePost(this.props.user.uid, this.props.user.name, this.props.activeGroup.id, this.state.createPostText).then(() => {
+          this.setState({createPostText: ""})
+        }).catch(error => {
+          alert("Could not post: "+error)
+        })
+      }
+      else {
+        alert("You cannot post a blank message")
+      }
+    }
+    else {
+      alert("You must be signed in to post")
+    }
   }
 
   render () {
@@ -187,7 +197,19 @@ class Posts extends Component {
     for (let i = 0; i < this.state.posts.length; i++) {
       const post = this.state.posts[i]
       Posts.push(
-        <Post content={post.content} likes={post.likedBy.length} authorInitials={post.authorInitials}/>
+        <Post
+          content={post.content}
+          likes={post.likedBy.length}
+          authorInitials={post.authorInitials}
+          liked={post.likedBy.includes(this.props.user.uid)}
+          onClick={() => {
+            ToggleLikePost(this.props.user.uid, post.id).then(() => {
+              // done
+            }).catch(error => {
+              alert("could not like post")
+              console.log(error)
+            })
+          }}/>
       )
     }
 

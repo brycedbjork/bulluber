@@ -177,7 +177,6 @@ export const Login = () => {
 
 
 export const CreateUser = (uid, name, community, email) => {
-
     return new Promise((resolve, reject) => {
         firestore.collection("users").doc(uid).get().then(doc => {
             if (doc.exists) {
@@ -196,20 +195,22 @@ export const CreateUser = (uid, name, community, email) => {
     })
 };
 
-export const LikePost = (userId, postId) => {
+export const ToggleLikePost = (userId, postId) => {
     return new Promise((resolve, reject) => {
-        firestore.collection("likes").where("userId", "==", userId).where("postId", "==", postId).get().then(results => {
-            if (!results.empty) {
-                reject("You've already liked this post")
-            }
-            else {
-                firestore.collection("likes").add({
-                    userId: userId,
-                    postId: postId
-                }).then(doc => {
-                    resolve(doc.id)
-                }).catch(error => reject(error))
-            }
+      console.log(userId, postId)
+        firestore.collection("posts").doc(postId).get().then(doc => {
+          let newLikes = doc.data().likedBy
+          if (doc.data().likedBy.includes(userId)) {
+            // user already liked the post => unlike it
+            var index = newLikes.indexOf(userId);
+            if (index !== -1) newLikes.splice(index, 1);
+          }
+          else {
+            newLikes.push(userId)
+          }
+          firestore.collection("posts").doc(postId).update({
+            likedBy: newLikes
+          }).then(() => resolve()).catch(error => reject(error))
         }).catch(error => reject(error))
     })
 };

@@ -235,13 +235,10 @@ class Groups extends Component {
           Sign in to view your groups
         </NotSignedInText>}
 
-        <SecondarySectionLabel>Join Groups</SecondarySectionLabel>
+        {this.props.user.uid && OtherGroups.length > 0 && <SecondarySectionLabel>Join Groups</SecondarySectionLabel>}
         {this.props.user.uid && OtherGroups}
-        {!this.props.user.uid && <NotSignedInText>
-          Sign in to join other groups in your community
-        </NotSignedInText>}
 
-        <SecondarySectionLabel>Create Group</SecondarySectionLabel>
+        {this.props.user.uid && <SecondarySectionLabel>Create Group</SecondarySectionLabel>}
         {this.props.user.uid && <NewGroup>
           <NewGroupInput onChange={event => {
             this.setState({createGroupText: event.target.value})
@@ -250,9 +247,6 @@ class Groups extends Component {
             <ArrowImage src={require("./assets/arrow.png")}/>
           </NewGroupButton>
         </NewGroup>}
-        {!this.props.user.uid && <NotSignedInText>
-          Sign in to create a new group in your community
-        </NotSignedInText>}
       </Wrapper>
     )
   }
