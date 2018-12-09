@@ -165,13 +165,13 @@ class Posts extends Component {
 
     return (
       <Wrapper>
-        <Title>General</Title>
+        <Title>{this.props.activeGroup.name || "General"}</Title>
         <CreatePost>
           <CreatePostText onChange={event => {
             this.setState({createPostText: event.target.value})
           }} placeholder="what's up? let's talk"/>
           <Footer>
-            <FooterText>in {this.props.activeGroup || "General"}</FooterText>
+            <FooterText>in {this.props.activeGroup.name || "General"}</FooterText>
             <PostButton>
               Post
               <PostArrow src={require("./assets/arrow.png")}/>
