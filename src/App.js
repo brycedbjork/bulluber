@@ -168,7 +168,7 @@ class App extends Component {
               <RightHeader>
                 <LoginButton 
                   value="Submit" onClick={() => {
-                    if (this.state.uid) {
+                    if (this.state.user.uid) {
                       Logout().then(() => {
                         this.setState({user: this.userInitialState})
                       }).catch(error => {
