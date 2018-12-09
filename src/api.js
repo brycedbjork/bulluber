@@ -14,18 +14,20 @@ firebase.initializeApp(config);
 let firestore = firebase.firestore();
 var provider = new firebase.auth.GoogleAuthProvider();
 
-export const CreatePost = (userId, groupName, content) => {
+export const CreatePost = (userId, groupId, content) => {
     return new Promise((resolve, reject) => {
-        if (groupName === "") {
-            groupName = "General"
+        if (!groupId) {
+            // get id of general group
         }
-        firestore.collection("posts").add({
-            userId,
-            groupName,
-            content
-        }).then(doc => {
-            resolve(doc.id)
-        }).catch(error => reject(error))
+        else {
+            firestore.collection("posts").add({
+                userId,
+                groupId,
+                content
+            }).then(doc => {
+                resolve(doc.id)
+            }).catch(error => reject(error))
+        }
     })
 };
 

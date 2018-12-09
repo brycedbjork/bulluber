@@ -15,6 +15,7 @@ const Wrapper = styled.div`
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+  height: 100%;
 `;
 
 const CreatePostButton = styled.button`
@@ -35,27 +36,12 @@ const LogoutButton = styled.button`
   padding: 10px;
 `;
 
-const Input = styled.input`
-  padding: 0.5em;
-  margin: 0.5em;
-  color: ${props => props.inputColor || "palevioletred"};
-  background: papayawhip;
-  border: none;
-  border-radius: 3px;
-`;
-
-const ContentInput = styled.textarea`
-  padding: 0.5em;
-  margin: 0.5em;
-  width:500px;
-  height:300px;
-  color: ${props => props.inputColor || "palevioletred"};
-  background: papayawhip;
-  border: none;
-  border-radius: 3px;
-`;
-
 const Header = styled.div`
+  z-index: 100;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   height: 80px;
   box-sizing: border-box;
   padding-top: 20px;
@@ -65,9 +51,10 @@ const Header = styled.div`
   width: 100%;
   display: flex;
   flex-direction: row;
+  background-color: #ffffff;
   align-items: center;
   justify-content: space-between;
-  box-shadow: rgba(19, 23, 39, 0.1) 0px 4px 10px 0px;
+  box-shadow: rgba(19, 23, 39, 0.1) 0px 2px 20px 0px;
 `
 
 const LeftHeader = styled.div`
@@ -98,29 +85,43 @@ const SubTitle = styled.h2`
 `
 
 const GoogleImage = styled.img`
-  height: 30px;
+  height: 28px;
   width: auto;
   margin-top: 5px;
+  margin-left: 10px;
 `
 
 const Body = styled.div`
+  padding-top: 80px;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+  position: relative;
+`
 
+const LogInOut = styled.div`
+  font-size: 20px;
+  color: ${colors.nearBlack};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 150ms cubic-bezier(0.21, 0.94, 0.64, 0.99);
+  :hover {
+    cursor: default;
+    transform: scale(1.03);
+  }
 `
 
 
 class App extends Component {
 
     constructor(props) {
-        super(props);
-
+        super(props)
         this.state = {
-            currentUserUID: null,
-            activeGroup: null,
-            isLoggedIn: false
+            uid: null,
+            activeGroup: null
         };
-
-        this.handleLogout = this.handleLogout.bind(this);
-        this.handleLogin = this.handleLogin.bind(this);
         this.updateActiveGroup = this.updateActiveGroup.bind(this);
     }
 
@@ -128,61 +129,13 @@ class App extends Component {
       this.setState({activeGroup: groupId})
     }
 
-    handleLogin = () => {
-        let uid = -1;
-        let name = "";
-        var that = this;
-        Login().then(function (result) {
-            uid = result.user.uid;
-            name = result.user.displayName;
-            console.log(result)
-            that.setState({currentUserUID: uid, isLoggedIn: true});
-            // CreateProfile(that.state.currentUserUID, name)
-        }).catch(function (error) {
-            alert(error.message);
-        });
-
-    };
-
-    handleLogout = () => {
-        Logout()
-        this.setState({isLoggedIn: false})
-        console.log("logout is: ", this.state.isLoggedIn)
-    };
-
-
-    handleGetUsersPosts = () => {
-        GetUsersPosts().then(function(snap){
-                snap.forEach(function(post){
-                    console.log(post.id,"=>",post.data())
-                })
-    })};
-
-
-    handleGetAllPosts = () => {
-        GetAllPosts().then(function(snap){
-            snap.forEach(function(post){
-                console.log(post.id,"=>",post.data())
-                return(
-                  <div>I LOVE BUBBLES</div>
-                  )
-            })
-        })};
-
-    //
-    // handleMessagesDisplay = () => {
-    //     var userId = firebase.auth().currentUser.uid;
-    //     let firestore = firebase.firestore();
-    //     console.log(firestore.collection('posts/').where("userId", "==",userId).get().then(function(snap){
-    //         snap.forEach(function(post){
-    //             console.log(post.id,"=>",post.data())
-    //         })
-    //     }))
-    // };
-
     render() {
         return (
           <Wrapper>
+            <Body>
+              <Posts uid={this.state.uid} activeGroup={this.state.activeGroup}/>
+            </Body>
+            <Groups uid={this.state.uid} updateActiveGroup={this.updateActiveGroup}/>
             <Header>
               <LeftHeader>
                 <Title>bulluber</Title>
@@ -191,25 +144,30 @@ class App extends Component {
               <RightHeader>
                 <LoginButton 
                   value="Submit" onClick={() => {
-                    if (this.state.isLoggedIn) {
-                      this.handleLogout()
+                    if (this.state.uid) {
+                      Logout().then(() => {
+                        this.setState({uid: null})
+                      }).catch(error => {
+                        alert("An error occurred while logging out")
+                      })
                     }
                     else {
-                      this.handleLogin()
+                      Login().then(uid => {
+                        this.setState({uid})
+                      }).catch(error => {
+                        alert("An error occurred while logging in")
+                      })
                     }
                   }}>
-                    {this.state.isLoggedIn && "logout"}
-                    {!this.state.isLoggedIn && (
-                      <GoogleImage src={require("./assets/google.png")}/>
+                    {this.state.uid && (<LogInOut>logout</LogInOut>)}
+                    {!this.state.uid && (
+                      <LogInOut>
+                        sign in with <GoogleImage src={require("./assets/google.png")}/>
+                      </LogInOut>
                     )}
                 </LoginButton>
               </RightHeader>
             </Header>
-            <Body>
-              <Groups updateActiveGroup={this.updateActiveGroup}/>
-              {this.state.isLoggedIn && <Posts/>}
-            </Body>
-
           </Wrapper>
         );
     }
