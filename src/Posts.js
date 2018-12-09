@@ -2,6 +2,7 @@ import React, {Component} from "react"
 import firebase from "firebase"
 import styled from "styled-components"
 import {colors} from "./lib/styles"
+import { CreatePost } from "./api"
 
 const Wrapper = styled.div`
   padding: 40px;
@@ -18,7 +19,7 @@ const Title = styled.h1`
   margin-bottom: 40px;
 `
 
-const CreatePost = styled.div`
+const CreatePostWrapper = styled.div`
   width: 500px;
   height: 200px;
   position: relative;
@@ -148,11 +149,20 @@ class Posts extends Component {
       posts: [],
       createPostText: "",
     }
+    this.handlePost = this.handlePost.bind(this)
   }
 
   componentDidMount() {
     
-  } 
+  }
+
+  handlePost() {
+    CreatePost(this.props.user.uid, this.props.activeGroup.id, this.state.createPostText).then(() => {
+      this.setState({createPostText: ""})
+    }).catch(error => {
+      alert("Could not post: "+error)
+    })
+  }
 
   render () {
     let posts = []
@@ -166,18 +176,18 @@ class Posts extends Component {
     return (
       <Wrapper>
         <Title>{this.props.activeGroup.name || "General"}</Title>
-        <CreatePost>
+        <CreatePostWrapper>
           <CreatePostText onChange={event => {
             this.setState({createPostText: event.target.value})
-          }} placeholder="what's up? let's talk"/>
+          }} placeholder="what's up? let's talk" value={this.state.createPostText}/>
           <Footer>
             <FooterText>in {this.props.activeGroup.name || "General"}</FooterText>
-            <PostButton>
+            <PostButton onClick={this.handlePost}>
               Post
               <PostArrow src={require("./assets/arrow.png")}/>
             </PostButton>
           </Footer>
-        </CreatePost>
+        </CreatePostWrapper>
         <Post content="test content" likes={5} authorInitials="BB"/>
       </Wrapper>
     )

@@ -113,6 +113,10 @@ export const WatchCommunityGroups = (community, successCallback, errorCallback) 
     }, error => errorCallback(error))
 }
 
+export const WatchGroupPosts = (groupId, successCallback, errorCallback) => {
+  
+}
+
 export const GetUsersPosts = () => {
     return new Promise((resolve, reject) => {
         var userId = firebase.auth().currentUser.uid;

@@ -180,7 +180,10 @@ class App extends Component {
                       Login().then(results => {
                         this.setState({
                           user: results.user,
-                          activeGroup: results.groupId 
+                          activeGroup: {
+                            id: results.groupId,
+                            name: "General"
+                          } 
                         })
                       }).catch(error => {
                         alert("An error occurred while logging in")
