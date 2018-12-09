@@ -23,7 +23,8 @@ export const CreatePost = (userId, userName, groupId, content) => {
             authorInitials: userName.split(" ").map(word => word[0]).join(""),
             groupId,
             content,
-            likedBy: []
+            likedBy: [],
+            timestamp: firebase.firestore.Timestamp.now().toMillis(),
         }).then(doc => {
             resolve(doc.id)
         }).catch(error => reject(error))
@@ -111,7 +112,7 @@ export const WatchCommunityGroups = (community, successCallback, errorCallback) 
 }
 
 export const WatchGroupPosts = (groupId, successCallback, errorCallback) => {
-  firestore.collection("posts").where("groupId", "==", groupId).onSnapshot(querySnap => {
+  firestore.collection("posts").where("groupId", "==", groupId).orderBy("timestamp", "desc").onSnapshot(querySnap => {
     let posts = []
     querySnap.docs.forEach(doc => {
       posts.push({
