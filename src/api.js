@@ -48,6 +48,25 @@ export const CreateGroup = (groupName) => {
     })
 };
 
+export const JoinGroup = (groupId, uid) => {
+    return new Promise((resolve, reject) => {
+        let membershipGroupRef = firestore.collection("memberships");
+        membershipGroupRef.where("groupId", "==", groupId).where("uid", "==", uid).get().then(results => {
+            if (!results.empty) {
+                reject("Already a member of this group!")
+            }
+            else {
+                membershipGroupRef.add({
+                  groupId:groupId,
+                  uid:uid,
+                }).then(doc => {
+                    resolve(doc.id)
+                }).catch(error => reject(error))
+            }
+        })
+    })
+};
+
 export const GetUsersPosts = () => {
     return new Promise((resolve, reject) => {
         var userId = firebase.auth().currentUser.uid;
@@ -93,12 +112,12 @@ export const Login = () => {
 
 export const CreateProfile = (userId, name_in) => {
 
-    return new Promise ((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         firestore.collection("users").where("userId", "==", userId).get().then(results => {
             if (!results.empty) {
                 reject("This user already exists")
-            } 
-            else{
+            }
+            else {
                 firestore.collection("users").add({
                     name: name_in,
                 }).then(doc => {
@@ -110,12 +129,12 @@ export const CreateProfile = (userId, name_in) => {
 };
 
 export const LikePost = (userId, postId) => {
-    return new Promise ((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         firestore.collection("likes").where("userId", "==", userId).where("postId", "==", postId).get().then(results => {
             if (!results.empty) {
                 reject("You've already liked this post")
-            } 
-            else{
+            }
+            else {
                 firestore.collection("likes").add({
                     userId: userId,
                     postId: postId
