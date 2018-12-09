@@ -15,6 +15,7 @@ const Wrapper = styled.div`
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+  height: 100%;
 `;
 
 const CreatePostButton = styled.button`
@@ -35,27 +36,8 @@ const LogoutButton = styled.button`
   padding: 10px;
 `;
 
-const Input = styled.input`
-  padding: 0.5em;
-  margin: 0.5em;
-  color: ${props => props.inputColor || "palevioletred"};
-  background: papayawhip;
-  border: none;
-  border-radius: 3px;
-`;
-
-const ContentInput = styled.textarea`
-  padding: 0.5em;
-  margin: 0.5em;
-  width:500px;
-  height:300px;
-  color: ${props => props.inputColor || "palevioletred"};
-  background: papayawhip;
-  border: none;
-  border-radius: 3px;
-`;
-
 const Header = styled.div`
+  z-index: 100;
   position: fixed;
   top: 0;
   left: 0;
@@ -69,9 +51,10 @@ const Header = styled.div`
   width: 100%;
   display: flex;
   flex-direction: row;
+  background-color: #ffffff;
   align-items: center;
   justify-content: space-between;
-  box-shadow: rgba(19, 23, 39, 0.1) 0px 4px 10px 0px;
+  box-shadow: rgba(19, 23, 39, 0.1) 0px 2px 20px 0px;
 `
 
 const LeftHeader = styled.div`
@@ -102,16 +85,32 @@ const SubTitle = styled.h2`
 `
 
 const GoogleImage = styled.img`
-  height: 30px;
+  height: 28px;
   width: auto;
   margin-top: 5px;
+  margin-left: 10px;
 `
 
 const Body = styled.div`
-  padding-top: 100px;
+  padding-top: 80px;
   display: flex;
   flex-direction: row;
   width: 100%;
+  height: 100%;
+  position: relative;
+`
+
+const LogInOut = styled.div`
+  font-size: 20px;
+  color: ${colors.nearBlack};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 150ms cubic-bezier(0.21, 0.94, 0.64, 0.99);
+  :hover {
+    cursor: default;
+    transform: scale(1.03);
+  }
 `
 
 
@@ -131,13 +130,12 @@ class App extends Component {
     }
 
     render() {
-      console.log(this.state)
         return (
           <Wrapper>
             <Body>
-              <Groups uid={this.state.uid} updateActiveGroup={this.updateActiveGroup}/>
               <Posts uid={this.state.uid} activeGroup={this.state.activeGroup}/>
             </Body>
+            <Groups uid={this.state.uid} updateActiveGroup={this.updateActiveGroup}/>
             <Header>
               <LeftHeader>
                 <Title>bulluber</Title>
@@ -161,9 +159,11 @@ class App extends Component {
                       })
                     }
                   }}>
-                    {this.state.uid && "logout"}
+                    {this.state.uid && (<LogInOut>logout</LogInOut>)}
                     {!this.state.uid && (
-                      <GoogleImage src={require("./assets/google.png")}/>
+                      <LogInOut>
+                        sign in with <GoogleImage src={require("./assets/google.png")}/>
+                      </LogInOut>
                     )}
                 </LoginButton>
               </RightHeader>

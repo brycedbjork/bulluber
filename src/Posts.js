@@ -4,25 +4,28 @@ import styled from "styled-components"
 import {colors} from "./lib/styles"
 
 const Wrapper = styled.div`
-  flex: 1;
   padding: 40px;
+  flex: 1;
+  box-sizing: border-box;
+  padding-left: 360px;
+  position: relative;
 `
 
-const Post = styled.div`
-  padding: 40px;
-  border-radius: 10px;
-  border: 1px solid rgba(19, 23, 39, 0.1);
-  box-sizing: border-box;
-  width: 500px;
+const Title = styled.h1`
+  font-size: 36px;
+  font-weight: 600;
+  color: ${colors.nearBlack};
+  margin-bottom: 40px;
 `
 
 const CreatePost = styled.div`
   width: 500px;
   height: 200px;
   position: relative;
+  margin-bottom: 40px;
 `
 
-const CreatePostInput = styled.textarea`
+const CreatePostText = styled.textarea`
   resize: none;
   width: 500px;
   height: 200px;
@@ -41,7 +44,7 @@ const Footer = styled.div`
   position: absolute;
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
   padding: 20px;
   bottom: 0;
@@ -79,11 +82,71 @@ const PostArrow = styled.img`
   margin-left: 10px;
 `
 
+const PostWrapper = styled.div`
+  width: 500px;
+  box-sizing: border-box;
+  padding: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  min-height: 160px;
+  border-radius: 10px;
+  border: 1px solid rgba(19, 23, 39, 0.1);
+  transition: all 150ms cubic-bezier(0.21, 0.94, 0.64, 0.99);
+  :hover {
+    cursor: default;
+    transform: scale(1.03);
+  }
+` 
+
+const PostContent = styled.p`
+  font-size: 18px;
+  font-weight: 500;
+  color: ${colors.nearBlack};
+`
+
+const HeartImage = styled.img`
+  height: 16px;
+  width: auto;
+  margin-right: 5px;
+`
+
+const PostAuthor = styled.p`
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  font-size: 16px;
+  color: ${colors.gray};
+`
+
+const PostLikes = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+`
+  
+const Post = ({content, likes, authorInitials}) => {
+  return (
+    <PostWrapper>
+      <PostContent>{content}</PostContent>
+      <PostLikes>
+        <HeartImage src={require("./assets/heart.png")}/>
+        {likes}
+      </PostLikes>
+      <PostAuthor>-{authorInitials}</PostAuthor>
+    </PostWrapper>
+  )
+}
+
 class Posts extends Component {
   constructor (props){
     super(props);
     this.state = {
-      posts: []
+      posts: [],
+      createPostText: "",
     }
   }
 
@@ -96,16 +159,17 @@ class Posts extends Component {
     for (let i = 0; i < this.state.posts.length; i++) {
       const post = this.state.posts[i]
       posts.push(
-        <Post>
-          {post.content}
-        </Post>
+        <Post content="test content" likes={5} authorInitials="BB"/>
       )
     }
 
     return (
       <Wrapper>
+        <Title>General</Title>
         <CreatePost>
-          <CreatePostInput placeholder="what's up? let's talk"/>
+          <CreatePostText onChange={event => {
+            this.setState({createPostText: event.target.value})
+          }} placeholder="what's up? let's talk"/>
           <Footer>
             <FooterText>in {this.props.activeGroup || "General"}</FooterText>
             <PostButton>
@@ -114,7 +178,7 @@ class Posts extends Component {
             </PostButton>
           </Footer>
         </CreatePost>
-        {posts}
+        <Post content="test content" likes={5} authorInitials="BB"/>
       </Wrapper>
     )
   }
