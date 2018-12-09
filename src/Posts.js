@@ -2,7 +2,7 @@ import React, {Component} from "react"
 import firebase from "firebase"
 import styled from "styled-components"
 import {colors} from "./lib/styles"
-import { CreatePost } from "./api"
+import { CreatePost, WatchGroupPosts } from "./api"
 
 const Wrapper = styled.div`
   padding: 40px;
@@ -87,6 +87,7 @@ const PostWrapper = styled.div`
   width: 500px;
   box-sizing: border-box;
   padding: 20px;
+  margin-bottom: 40px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -150,14 +151,31 @@ class Posts extends Component {
       createPostText: "",
     }
     this.handlePost = this.handlePost.bind(this)
+    this.watchPosts = this.watchPosts.bind(this)
+  }
+
+  watchPosts(groupId) {
+    WatchGroupPosts(groupId, posts => {
+      this.setState({posts})
+    }, error => {
+      alert("Could not get posts: "+error)
+    })
   }
 
   componentDidMount() {
-    
+    if (this.props.activeGroup.id) {
+      this.watchPosts(this.props.activeGroup.id)
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.activeGroup.id) {
+      this.watchPosts(nextProps.activeGroup.id)
+    }
   }
 
   handlePost() {
-    CreatePost(this.props.user.uid, this.props.activeGroup.id, this.state.createPostText).then(() => {
+    CreatePost(this.props.user.uid, this.props.user.name, this.props.activeGroup.id, this.state.createPostText).then(() => {
       this.setState({createPostText: ""})
     }).catch(error => {
       alert("Could not post: "+error)
@@ -165,17 +183,17 @@ class Posts extends Component {
   }
 
   render () {
-    let posts = []
+    let Posts = []
     for (let i = 0; i < this.state.posts.length; i++) {
       const post = this.state.posts[i]
-      posts.push(
-        <Post content="test content" likes={5} authorInitials="BB"/>
+      Posts.push(
+        <Post content={post.content} likes={post.likedBy.length} authorInitials={post.authorInitials}/>
       )
     }
 
     return (
       <Wrapper>
-        <Title>{this.props.activeGroup.name || "General"}</Title>
+        <Title>{this.props.activeGroup.name || "Sign in to start"}</Title>
         <CreatePostWrapper>
           <CreatePostText onChange={event => {
             this.setState({createPostText: event.target.value})
@@ -188,7 +206,7 @@ class Posts extends Component {
             </PostButton>
           </Footer>
         </CreatePostWrapper>
-        <Post content="test content" likes={5} authorInitials="BB"/>
+        {Posts}
       </Wrapper>
     )
   }

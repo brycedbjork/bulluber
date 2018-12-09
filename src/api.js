@@ -16,20 +16,17 @@ const settings = {timestampsInSnapshots: true};
 firestore.settings(settings)
 var provider = new firebase.auth.GoogleAuthProvider();
 
-export const CreatePost = (userId, groupId, content) => {
+export const CreatePost = (userId, userName, groupId, content) => {
     return new Promise((resolve, reject) => {
-        if (!groupId) {
-            // get id of general group
-        }
-        else {
-            firestore.collection("posts").add({
-                userId,
-                groupId,
-                content
-            }).then(doc => {
-                resolve(doc.id)
-            }).catch(error => reject(error))
-        }
+        firestore.collection("posts").add({
+            userId,
+            authorInitials: userName.split(" ").map(word => word[0]).join(""),
+            groupId,
+            content,
+            likedBy: []
+        }).then(doc => {
+            resolve(doc.id)
+        }).catch(error => reject(error))
     })
 };
 
@@ -114,7 +111,16 @@ export const WatchCommunityGroups = (community, successCallback, errorCallback) 
 }
 
 export const WatchGroupPosts = (groupId, successCallback, errorCallback) => {
-  
+  firestore.collection("posts").where("groupId", "==", groupId).onSnapshot(querySnap => {
+    let posts = []
+    querySnap.docs.forEach(doc => {
+      posts.push({
+        id: doc.id,
+        ...doc.data()
+      })
+    })
+    successCallback(posts)
+  }, error => errorCallback(error))
 }
 
 export const GetUsersPosts = () => {
