@@ -216,7 +216,7 @@ class Groups extends Component {
           <GroupOption
             key={"groupJoinOption"+groupId}
             onClick={() => {
-              JoinGroup(groupId, this.props.uid).then(() => {
+              JoinGroup(groupId, this.props.user.uid).then(() => {
                 // successfully joined group
               }).catch(error => {
                 alert("Could not join group: "+error)
