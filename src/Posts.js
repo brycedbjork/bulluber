@@ -2,7 +2,7 @@ import React, {Component} from "react"
 import firebase from "firebase"
 import styled from "styled-components"
 import {colors} from "./lib/styles"
-import { CreatePost, WatchGroupPosts, ToggleLikePost } from "./api"
+import { CreatePost, WatchGroupPosts, ToggleLikePost, GetInitials } from "./api"
 
 const Wrapper = styled.div`
   padding: 40px;
@@ -174,6 +174,7 @@ class Posts extends Component {
     }
   }
 
+
   handlePost() {
     if (this.props.user.uid && this.props.activeGroup.id) {
       if (this.state.createPostText != "") {
@@ -200,7 +201,7 @@ class Posts extends Component {
         <Post
           content={post.content}
           likes={post.likedBy.length}
-          authorInitials={post.authorInitials}
+          authorInitials={GetInitials(post.userId)}
           liked={post.likedBy.includes(this.props.user.uid)}
           onClick={() => {
             ToggleLikePost(this.props.user.uid, post.id).then(() => {

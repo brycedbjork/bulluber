@@ -16,6 +16,23 @@ const settings = {timestampsInSnapshots: true};
 firestore.settings(settings)
 var provider = new firebase.auth.GoogleAuthProvider();
 
+export const GetInitials = (userId) => {
+    firestore.collection("users").doc(userId).get().then(doc => {
+        console.log(doc.data.name)
+        console.log(doc.data().name.split(" ").map(word => word[0]).join(""))
+        return doc.data().name.split(" ").map(word => word[0]).join("")
+    })
+};
+/**
+        firestore.collection("users").doc(userId).get().then(doc => {
+            console.log("test", doc.data())
+            console.log(doc.data().name)
+            resolve()
+        }).catch(error => reject(error))
+    })
+};
+**/
+
 export const CreatePost = (userId, userName, groupId, content) => {
     return new Promise((resolve, reject) => {
         firestore.collection("posts").add({
