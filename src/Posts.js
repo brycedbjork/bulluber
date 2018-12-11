@@ -2,7 +2,7 @@ import React, {Component} from "react"
 import firebase from "firebase"
 import styled from "styled-components"
 import {colors} from "./lib/styles"
-import { CreatePost, WatchGroupPosts, ToggleLikePost, GetInitials } from "./api"
+import { CreatePost, WatchGroupPosts, ToggleLikePost, GetInitials, WatchUserIDs } from "./api"
 
 const Wrapper = styled.div`
   padding: 40px;
@@ -149,9 +149,11 @@ class Posts extends Component {
     this.state = {
       posts: [],
       createPostText: "",
+      initials: []
     }
     this.handlePost = this.handlePost.bind(this)
     this.watchPosts = this.watchPosts.bind(this)
+    this.render = this.render.bind(this)
   }
 
   watchPosts(groupId) {
@@ -159,6 +161,12 @@ class Posts extends Component {
       this.setState({posts})
     }, error => {
       alert("Could not get posts: "+error)
+    })
+    WatchUserIDs(initials => {
+      console.log("yo", initials)
+      this.setState({initials})
+    }, error => {
+      alert("Could not get userIds: "+error)
     })
   }
 
@@ -195,13 +203,24 @@ class Posts extends Component {
 
   render () {
     let Posts = []
+    console.log("hi", this.state.initials)
     for (let i = 0; i < this.state.posts.length; i++) {
+
       const post = this.state.posts[i]
+      const output_initials = ""
+      for (let j = 0; j < this.state.initials.length; j++) {
+        if (this.state.initials[j].id == post.userId) {
+          output_initials = this.state.initials[j].initials
+          console.log("ini", output_initials)
+          break
+        }
+      }
+      console.log("post", post);
       Posts.push(
         <Post
           content={post.content}
           likes={post.likedBy.length}
-          authorInitials={GetInitials(post.userId)}
+          authorInitials={output_initials}
           liked={post.likedBy.includes(this.props.user.uid)}
           onClick={() => {
             ToggleLikePost(this.props.user.uid, post.id).then(() => {
@@ -232,6 +251,8 @@ class Posts extends Component {
         {Posts}
       </Wrapper>
     )
+
+
   }
 }
 

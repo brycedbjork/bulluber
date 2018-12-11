@@ -16,28 +16,11 @@ const settings = {timestampsInSnapshots: true};
 firestore.settings(settings)
 var provider = new firebase.auth.GoogleAuthProvider();
 
-export const GetInitials = (userId) => {
-    firestore.collection("users").doc(userId).get().then(doc => {
-        console.log(doc.data.name)
-        console.log(doc.data().name.split(" ").map(word => word[0]).join(""))
-        return doc.data().name.split(" ").map(word => word[0]).join("")
-    })
-};
-/**
-        firestore.collection("users").doc(userId).get().then(doc => {
-            console.log("test", doc.data())
-            console.log(doc.data().name)
-            resolve()
-        }).catch(error => reject(error))
-    })
-};
-**/
 
 export const CreatePost = (userId, userName, groupId, content) => {
     return new Promise((resolve, reject) => {
         firestore.collection("posts").add({
             userId,
-            authorInitials: userName.split(" ").map(word => word[0]).join(""),
             groupId,
             content,
             likedBy: [],
@@ -105,6 +88,19 @@ export const GetGeneralGroup = (community, uid) => {
     })
 }
 
+export const WatchGroupPosts = (groupId, successCallback, errorCallback) => {
+  firestore.collection("posts").where("groupId", "==", groupId).orderBy("timestamp", "desc").onSnapshot(querySnap => {
+    let posts = []
+    querySnap.docs.forEach(doc => {
+      posts.push({
+        id: doc.id,
+        ...doc.data()
+      })
+    })
+    successCallback(posts)
+  }, error => errorCallback(error))
+}
+
 export const WatchUserGroups = (uid, successCallback, errorCallback) => {
     // get user groups from membership table
     let groupListeners = []
@@ -128,16 +124,16 @@ export const WatchCommunityGroups = (community, successCallback, errorCallback) 
     }, error => errorCallback(error))
 }
 
-export const WatchGroupPosts = (groupId, successCallback, errorCallback) => {
-  firestore.collection("posts").where("groupId", "==", groupId).orderBy("timestamp", "desc").onSnapshot(querySnap => {
-    let posts = []
+export const WatchUserIDs = (successCallback, errorCallback) => {
+  firestore.collection("users").onSnapshot(querySnap => {
+    let user_info = []
     querySnap.docs.forEach(doc => {
-      posts.push({
+      user_info.push({
         id: doc.id,
-        ...doc.data()
+        initials: doc.data().name.split(" ").map(word => word[0]).join("")
       })
     })
-    successCallback(posts)
+    successCallback(user_info)
   }, error => errorCallback(error))
 }
 
